@@ -32,6 +32,7 @@ class Article extends Model {
         if (!$this->cover_image) return null;
         if (str_starts_with($this->cover_image, 'http')) return $this->cover_image;
         if (str_starts_with($this->cover_image, 'articles/')) return asset('storage/'.$this->cover_image);
+        if (str_starts_with($this->cover_image, 'uploads/')) return asset($this->cover_image);
         return asset('images/'.$this->cover_image);
     }
 

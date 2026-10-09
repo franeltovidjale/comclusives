@@ -49,8 +49,8 @@ class ArticleController extends Controller
         $data = $this->validateArticle($request, $article);
         if ($request->hasFile('cover_image')) {
             if ($article->cover_image && !str_starts_with($article->cover_image, 'http')) {
-                Storage::disk('public')->delete($article->cover_image);
-                Storage::disk('public')->delete(str_replace('.webp', '_thumb.webp', $article->cover_image));
+                $old = public_path($article->cover_image);
+                if (file_exists($old)) @unlink($old);
             }
             $data['cover_image'] = $this->handleImage($request);
         }
@@ -64,7 +64,8 @@ class ArticleController extends Controller
     public function destroy(Article $article)
     {
         if ($article->cover_image && !str_starts_with($article->cover_image, 'http')) {
-            Storage::disk('public')->delete($article->cover_image);
+            $old = public_path($article->cover_image);
+            if (file_exists($old)) @unlink($old);
         }
         $article->delete();
         return redirect()->route('admin.articles.index')->with('success', 'Article supprimé.');
@@ -121,7 +122,7 @@ class ArticleController extends Controller
         $name = Str::uuid().'.'.$ext;
         $path = 'articles/'.$name;
 
-        $dest = storage_path('app/public/articles');
+        $dest = public_path('uploads/articles');
         File::ensureDirectoryExists($dest);
         File::ensureDirectoryExists($dest.'/thumbs');
 
@@ -132,7 +133,7 @@ class ArticleController extends Controller
             $this->makeThumb($dest.'/'.$name, $dest.'/thumbs/'.$name, 400);
         }
 
-        return $path;
+        return 'uploads/articles/'.$name;
     }
 
     private function makeThumb(string $src, string $dest, int $maxW): void
