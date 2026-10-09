@@ -115,6 +115,7 @@ class ArticleController extends Controller
             'meta_title'       => 'nullable|string|max:70',
             'meta_description' => 'nullable|string|max:160',
             'status'           => 'in:draft,published',
+            'published_at'     => 'nullable|date',
             'categories'       => 'array',
             'categories.*'     => 'exists:categories,id',
         ]);
