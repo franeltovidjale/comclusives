@@ -138,7 +138,7 @@ class ArticleSeeder extends Seeder
             <div class="mt-10 text-center">
                 <a href="../blog/index.html" class="btn-outline inline-flex items-center gap-2"><i data-lucide="arrow-left" class="h-4 w-4"></i> Retour au blog</a>
             </div>',
-                'cover_image' => '/uploads/2025/11/Nouveau-projet-1.png',
+                'cover_image' => 'Nouveau-projet-1.png',
                 'status'           => 'published',
                 'published_at'     => Carbon::parse('2025-09-15'),
                 'category'         => 'Egalite',
@@ -886,7 +886,7 @@ Comprendre ces termes permet de mieux protéger les utilisateurs, de renforcer l
         Commentaires (2)    </h2>
     <ul class="comment-list">
             <li class="comment even thread-even depth-1 th-comment-item">',
-                'cover_image' => '/uploads/2025/11/Nouveau-projet-2.png',
+                'cover_image' => 'Nouveau-projet-2.png',
                 'status'           => 'published',
                 'published_at'     => Carbon::parse('2026-01-10'),
                 'category'         => 'Inclusion',
