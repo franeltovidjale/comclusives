@@ -75,7 +75,7 @@
 .article-prose strong,
 .article-prose b { font-weight:700; color:#111827; }
 .article-prose a { color:#0a6b63; text-decoration:underline; text-underline-offset:3px; }
-.article-prose img { border-radius:12px; max-width:100%; margin:2rem auto; display:block; }
+.article-prose img { border-radius:12px; width:100%; max-width:100%; height:auto; margin:2rem auto; display:block; }
 .article-prose table { width:100%; border-collapse:collapse; margin:2rem 0; font-size:.9rem; }
 .article-prose th { background:#0a6b63; color:#fff; padding:.75rem 1rem; text-align:left; }
 .article-prose td { padding:.75rem 1rem; border-bottom:1px solid #e5e7eb; }
