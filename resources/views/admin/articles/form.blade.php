@@ -89,9 +89,13 @@
                            class="w-full px-3 py-2.5 rounded-xl border border-gray-200 text-sm focus:outline-none focus:border-primary transition">
                 </div>
                 <div class="flex gap-2 pt-2">
-                    <button type="submit" name="action" value="publish"
-                            class="flex-1 py-2.5 rounded-xl text-white text-sm font-semibold healing-gradient hover:opacity-90 transition">
-                        {{ isset($article) ? 'Mettre à jour' : 'Publier' }}
+                    <button type="submit" name="action" value="publish" id="btnPublish"
+                            class="flex-1 py-2.5 rounded-xl text-white text-sm font-semibold healing-gradient hover:opacity-90 transition flex items-center justify-center gap-2">
+                        <svg id="btnSpinner" class="hidden animate-spin h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z"></path>
+                        </svg>
+                        <span id="btnLabel">{{ isset($article) ? 'Mettre à jour' : 'Publier' }}</span>
                     </button>
                     <button type="submit" name="action" value="draft"
                             class="px-4 py-2.5 rounded-xl border border-gray-200 text-sm font-medium text-gray-600 hover:bg-gray-50 transition">
@@ -168,6 +172,16 @@
         </div>
     </div>
 </form>
+<script>
+document.getElementById('articleForm').addEventListener('submit', function(e) {
+    const btn = document.getElementById('btnPublish');
+    if (document.activeElement === btn || e.submitter === btn) {
+        document.getElementById('btnSpinner').classList.remove('hidden');
+        document.getElementById('btnLabel').textContent = 'Enregistrement…';
+        btn.disabled = true;
+    }
+});
+</script>
 @endsection
 
 @push('scripts')
