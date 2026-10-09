@@ -10,7 +10,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
-use Intervention\Image\Laravel\Facades\Image;
+use Illuminate\Support\Facades\File;
 
 class ArticleController extends Controller
 {
@@ -117,16 +117,52 @@ class ArticleController extends Controller
         if (!$request->hasFile('cover_image')) return null;
 
         $file = $request->file('cover_image');
-        $name = Str::uuid().'.webp';
+        $ext  = strtolower($file->getClientOriginalExtension()) ?: 'jpg';
+        $name = Str::uuid().'.'.$ext;
         $path = 'articles/'.$name;
-        $thumbPath = 'articles/thumbs/'.$name;
 
-        // Convertir en WebP + redimensionner (performance)
-        $img = Image::read($file);
-        $img->scaleDown(1200)->toWebp(82)->save(storage_path('app/public/'.$path));
+        $dest = storage_path('app/public/articles');
+        File::ensureDirectoryExists($dest);
+        File::ensureDirectoryExists($dest.'/thumbs');
 
-        $img->scaleDown(400)->toWebp(75)->save(storage_path('app/public/'.$thumbPath));
+        $file->move($dest, $name);
+
+        // Générer une miniature 400px avec GD si disponible
+        if (function_exists('imagecreatefromjpeg')) {
+            $this->makeThumb($dest.'/'.$name, $dest.'/thumbs/'.$name, 400);
+        }
 
         return $path;
+    }
+
+    private function makeThumb(string $src, string $dest, int $maxW): void
+    {
+        $info = @getimagesize($src);
+        if (!$info) return;
+
+        [$w, $h, $type] = [$info[0], $info[1], $info[2]];
+        if ($w <= $maxW) { copy($src, $dest); return; }
+
+        $ratio  = $maxW / $w;
+        $newH   = (int) ($h * $ratio);
+
+        $orig = match($type) {
+            IMAGETYPE_JPEG => @imagecreatefromjpeg($src),
+            IMAGETYPE_PNG  => @imagecreatefrompng($src),
+            IMAGETYPE_WEBP => function_exists('imagecreatefromwebp') ? @imagecreatefromwebp($src) : null,
+            default        => null,
+        };
+        if (!$orig) { copy($src, $dest); return; }
+
+        $thumb = imagecreatetruecolor($maxW, $newH);
+        imagecopyresampled($thumb, $orig, 0, 0, 0, 0, $maxW, $newH, $w, $h);
+
+        match($type) {
+            IMAGETYPE_PNG  => imagepng($thumb, $dest, 7),
+            default        => imagejpeg($thumb, $dest, 82),
+        };
+
+        imagedestroy($orig);
+        imagedestroy($thumb);
     }
 }
