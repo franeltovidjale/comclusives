@@ -31,6 +31,9 @@ class ArticleController extends Controller
         $data = $this->validateArticle($request);
         $data['user_id'] = auth()->id();
         $data['cover_image'] = $this->handleImage($request);
+        if (($data['status'] ?? null) === 'published' && empty($data['published_at'])) {
+            $data['published_at'] = now();
+        }
 
         $article = Article::create($data);
         $article->categories()->sync($request->input('categories', []));
@@ -53,6 +56,10 @@ class ArticleController extends Controller
                 if (file_exists($old)) @unlink($old);
             }
             $data['cover_image'] = $this->handleImage($request);
+        }
+
+        if (($data['status'] ?? null) === 'published' && !$article->published_at && empty($data['published_at'])) {
+            $data['published_at'] = now();
         }
 
         $article->update($data);
