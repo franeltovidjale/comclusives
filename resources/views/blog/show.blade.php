@@ -58,6 +58,7 @@
 <style>
 /* Hide sidebar on mobile */
 @media (max-width: 767px) { .article-sidebar { display: none !important; } }
+@media (max-width: 767px) { .article-hero { min-height: 55vh !important; } }
 
 /* Article prose */
 .article-prose { font-size: 1.0625rem; line-height: 1.85; color: #374151; word-break: break-word; max-width: 100%; }
@@ -126,7 +127,7 @@
 @section('content')
 
 {{-- ══ HERO ══ --}}
-<div class="relative min-h-[55vh] sm:min-h-[70vh] flex items-end pb-16 overflow-hidden mt-20"
+<div class="article-hero relative flex items-end pb-16 overflow-hidden mt-20" style="min-height:70vh"
      style="background:{{ $article->cover_url ? 'none' : 'linear-gradient(135deg,#0a6b63,#1f2937)' }}">
 
     @if($article->cover_url)
