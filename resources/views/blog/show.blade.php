@@ -481,6 +481,7 @@ if (typeof lucide !== 'undefined') lucide.createIcons();
         // ===== COMMENTAIRES =====
         const COLORS = ['#0d9488','#6366f1','#f59e0b','#ec4899','#10b981','#3b82f6','#8b5cf6'];
         const COMMENTS = @json($comments);
+        const IS_AUTH = @json(auth()->check());
         let totalComments = COMMENTS.length;
 
         function initials(name) { return name.split(' ').map(w=>w[0]).join('').toUpperCase().slice(0,2); }
@@ -588,15 +589,26 @@ if (typeof lucide !== 'undefined') lucide.createIcons();
                     headers: { 'X-CSRF-TOKEN': CSRF_TOKEN, 'Accept': 'application/json', 'Content-Type': 'application/json' },
                     body: JSON.stringify({ action })
                 });
+                if (res.status === 401) return { error: 'login_required' };
                 return res.json();
+            }
+
+            function showLoginPrompt() {
+                const msg = document.createElement('div');
+                msg.style.cssText = 'position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:#0f1923;color:#fff;padding:12px 20px;border-radius:50px;font-size:13px;font-weight:600;z-index:9999;display:flex;align-items:center;gap:10px;box-shadow:0 8px 30px rgba(0,0,0,0.3)';
+                msg.innerHTML = 'Connectez-vous pour réagir &nbsp;<a href="/inscription" style="color:#0d9488;text-decoration:underline">S'inscrire</a> &nbsp;<a href="/login" style="color:#9ca3af;text-decoration:underline">Connexion</a>';
+                document.body.appendChild(msg);
+                setTimeout(() => msg.remove(), 4000);
             }
 
             // Like toggle
             likeBtn.addEventListener('click', async function() {
+                if (!IS_AUTH) { showLoginPrompt(); return; }
                 if (!commentId) return;
                 const alreadyLiked = this.dataset.liked === 'true';
                 try {
                     const json = await sendLike(alreadyLiked ? 'unlike' : 'like');
+                    if (json.error === 'login_required') { showLoginPrompt(); return; }
                     this.querySelector('.like-count').textContent = json.likes || '';
                     if (json.liked) {
                         localStorage.setItem('liked_' + commentId, '1');
@@ -611,11 +623,12 @@ if (typeof lucide !== 'undefined') lucide.createIcons();
 
             // Dislike toggle
             dislikeBtn.addEventListener('click', async function() {
+                if (!IS_AUTH) { showLoginPrompt(); return; }
                 const disliked = this.dataset.disliked === 'true';
-                // Si liké, unlike côté serveur aussi
                 if (likeBtn.dataset.liked === 'true' && commentId) {
                     try {
                         const json = await sendLike('unlike');
+                        if (json.error === 'login_required') { showLoginPrompt(); return; }
                         likeBtn.querySelector('.like-count').textContent = json.likes || '';
                         localStorage.removeItem('liked_' + commentId);
                         clearLike(likeBtn);

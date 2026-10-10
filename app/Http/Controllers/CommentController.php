@@ -80,6 +80,9 @@ class CommentController extends Controller
 
     public function like(Comment $comment)
     {
+        if (!auth()->check()) {
+            return response()->json(['error' => 'login_required'], 401);
+        }
         $action = request()->input('action', 'like');
         if ($action === 'unlike') {
             $comment->decrement('likes');
