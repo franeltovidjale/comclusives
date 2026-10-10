@@ -1,10 +1,9 @@
 <?php
 // Script temporaire - À SUPPRIMER après utilisation
-$env = parse_ini_file(__DIR__.'/../.env');
 $pdo = new PDO(
-    "mysql:host={$env['DB_HOST']};dbname={$env['DB_DATABASE']};charset=utf8mb4",
-    $env['DB_USERNAME'],
-    $env['DB_PASSWORD']
+    "mysql:host=127.0.0.1;port=3306;dbname=comcl2669576_74hq2t;charset=utf8mb4",
+    "comcl2669576",
+    "fzck3fbge0"
 );
 
 $articles = $pdo->query("SELECT id, title, content FROM articles WHERE content LIKE '%data:image%'")->fetchAll(PDO::FETCH_ASSOC);
@@ -33,4 +32,4 @@ foreach ($articles as $a) {
 }
 
 echo "\nTerminé. {$count} article(s) nettoyé(s).\n";
-echo "\n⚠️  SUPPRIME CE FICHIER : rm public/clean_base64.php\n";
+echo "\n⚠️  SUPPRIME CE FICHIER : rm ~/htdocs/public/clean_base64.php\n";
