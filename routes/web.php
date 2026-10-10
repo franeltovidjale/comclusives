@@ -25,7 +25,7 @@ Route::post('/contact', function (\Illuminate\Http\Request $request) {
             $data['name'],
             $data['email'],
             $data['phone'] ?? '',
-            $data['subject'] ?? 'Renseignement',
+            $data['subject'] ?? 'Renseignement', // passed as $topic
             $data['message'],
         ));
     return response()->json(['ok' => true]);

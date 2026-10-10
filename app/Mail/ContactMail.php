@@ -15,14 +15,14 @@ class ContactMail extends Mailable
         public string $senderName,
         public string $senderEmail,
         public string $phone,
-        public string $subject,
+        public string $topic,
         public string $body
     ) {}
 
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: '[Contact] ' . $this->subject . ' – ' . $this->senderName,
+            subject: '[Contact] ' . $this->topic . ' – ' . $this->senderName,
             replyTo: [$this->senderEmail],
         );
     }

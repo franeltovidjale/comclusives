@@ -35,7 +35,7 @@
           @endif
           <tr style="border-top:1px solid #e5e7eb;">
             <td style="padding:12px 16px;font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:#6b7280;">Objet</td>
-            <td style="padding:12px 16px;font-size:14px;color:#111827;">{{ $subject }}</td>
+            <td style="padding:12px 16px;font-size:14px;color:#111827;">{{ $topic }}</td>
           </tr>
         </table>
 
