@@ -573,43 +573,67 @@ if (typeof lucide !== 'undefined') lucide.createIcons();
             likeBtn.classList.remove('text-primary');
         }
 
+        // ── Auth Modal ──────────────────────────────────────────────────────────
+        const AUTH_CSRF = document.querySelector('meta[name="csrf-token"]')?.content || '{{ csrf_token() }}';
+        let _authRegisterEmail = null; // stocke l'email en attente de vérification OTP
+
         function showLoginPrompt(tab) {
             tab = tab || 'login';
             const existing = document.querySelector('[data-auth-overlay]');
-            if (existing) { existing.remove(); }
-            const CSRF = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '{{ csrf_token() }}';
+            if (existing) existing.remove();
             const overlay = document.createElement('div');
             overlay.style.cssText = 'position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,0.5);display:flex;align-items:center;justify-content:center;padding:16px';
             overlay.dataset.authOverlay = '1';
             overlay.innerHTML = `
                 <div style="background:#fff;border-radius:24px;padding:32px;max-width:380px;width:100%;box-shadow:0 24px 60px rgba(0,0,0,0.2)">
                     <div style="width:48px;height:4px;background:#0d9488;border-radius:2px;margin:0 auto 24px"></div>
-                    <div style="display:flex;border:1px solid #e5e7eb;border-radius:50px;padding:4px;margin-bottom:24px;gap:4px">
-                        <button id="tabLogin" onclick="switchTab('login')" style="flex:1;padding:8px;border-radius:50px;border:none;font-size:13px;font-weight:600;cursor:pointer;transition:all .2s;background:${tab==='login'?'#0d9488':'transparent'};color:${tab==='login'?'#fff':'#6b7280'}">Connexion</button>
-                        <button id="tabRegister" onclick="switchTab('register')" style="flex:1;padding:8px;border-radius:50px;border:none;font-size:13px;font-weight:600;cursor:pointer;transition:all .2s;background:${tab==='register'?'#0d9488':'transparent'};color:${tab==='register'?'#fff':'#6b7280'}">Inscription</button>
+                    <div id="authTabs" style="display:flex;border:1px solid #e5e7eb;border-radius:50px;padding:4px;margin-bottom:24px;gap:4px">
+                        <button onclick="switchTab('login')" id="tabLogin" style="flex:1;padding:8px;border-radius:50px;border:none;font-size:13px;font-weight:600;cursor:pointer;background:${tab==='login'?'#0d9488':'transparent'};color:${tab==='login'?'#fff':'#6b7280'}">Connexion</button>
+                        <button onclick="switchTab('register')" id="tabRegister" style="flex:1;padding:8px;border-radius:50px;border:none;font-size:13px;font-weight:600;cursor:pointer;background:${tab==='register'?'#0d9488':'transparent'};color:${tab==='register'?'#fff':'#6b7280'}">Inscription</button>
                     </div>
                     <div id="authError" style="display:none;background:#fef2f2;border:1px solid #fecaca;color:#dc2626;border-radius:12px;padding:10px 14px;font-size:13px;margin-bottom:16px"></div>
-                    <form id="authForm" onsubmit="submitAuth(event)">
-                        <input type="hidden" id="authTab" value="${tab}">
-                        <div id="fieldName" style="display:${tab==='register'?'block':'none'};margin-bottom:12px">
-                            <input name="name" type="text" placeholder="Votre prénom ou pseudo" style="width:100%;padding:12px 16px;border:1.5px solid #e5e7eb;border-radius:12px;font-size:14px;outline:none;box-sizing:border-box" onfocus="this.style.borderColor='#0d9488'" onblur="this.style.borderColor='#e5e7eb'">
-                        </div>
-                        <div style="margin-bottom:12px">
-                            <input name="email" type="email" placeholder="Adresse e-mail" required style="width:100%;padding:12px 16px;border:1.5px solid #e5e7eb;border-radius:12px;font-size:14px;outline:none;box-sizing:border-box" onfocus="this.style.borderColor='#0d9488'" onblur="this.style.borderColor='#e5e7eb'">
-                        </div>
-                        <div style="margin-bottom:6px">
-                            <input name="password" type="password" placeholder="Mot de passe" required minlength="8" style="width:100%;padding:12px 16px;border:1.5px solid #e5e7eb;border-radius:12px;font-size:14px;outline:none;box-sizing:border-box" onfocus="this.style.borderColor='#0d9488'" onblur="this.style.borderColor='#e5e7eb'">
-                        </div>
-                        <div id="forgotLink" style="text-align:right;margin-bottom:16px;display:${tab==='login'?'block':'none'}">
-                            <a href="/forgot-password" style="font-size:12px;color:#0d9488;text-decoration:none">Mot de passe oublié ?</a>
-                        </div>
-                        <div id="forgotSpacer" style="height:16px;display:${tab==='register'?'block':'none'}"></div>
-                        <button type="submit" id="authSubmitBtn" style="width:100%;padding:13px;background:#0d9488;color:#fff;border:none;border-radius:50px;font-size:14px;font-weight:600;cursor:pointer">${tab==='login'?'Se connecter':'Créer mon compte'}</button>
-                    </form>
+
+                    <!-- Étape 1 : formulaire -->
+                    <div id="authStep1">
+                        <form id="authForm" onsubmit="submitAuth(event)">
+                            <input type="hidden" id="authTab" value="${tab}">
+                            <div id="fieldName" style="display:${tab==='register'?'block':'none'};margin-bottom:12px">
+                                <input name="name" type="text" placeholder="Votre prénom ou pseudo" style="width:100%;padding:12px 16px;border:1.5px solid #e5e7eb;border-radius:12px;font-size:14px;outline:none;box-sizing:border-box" onfocus="this.style.borderColor='#0d9488'" onblur="this.style.borderColor='#e5e7eb'">
+                            </div>
+                            <div style="margin-bottom:12px">
+                                <input name="email" type="email" placeholder="Adresse e-mail" required style="width:100%;padding:12px 16px;border:1.5px solid #e5e7eb;border-radius:12px;font-size:14px;outline:none;box-sizing:border-box" onfocus="this.style.borderColor='#0d9488'" onblur="this.style.borderColor='#e5e7eb'">
+                            </div>
+                            <div style="margin-bottom:6px">
+                                <input name="password" type="password" placeholder="Mot de passe" required minlength="8" style="width:100%;padding:12px 16px;border:1.5px solid #e5e7eb;border-radius:12px;font-size:14px;outline:none;box-sizing:border-box" onfocus="this.style.borderColor='#0d9488'" onblur="this.style.borderColor='#e5e7eb'">
+                            </div>
+                            <div id="forgotLink" style="text-align:right;margin-bottom:16px;display:${tab==='login'?'block':'none'}">
+                                <a href="/forgot-password" style="font-size:12px;color:#0d9488;text-decoration:none">Mot de passe oublié ?</a>
+                            </div>
+                            <div id="forgotSpacer" style="height:16px;display:${tab==='register'?'block':'none'}"></div>
+                            <button type="submit" id="authSubmitBtn" style="width:100%;padding:13px;background:#0d9488;color:#fff;border:none;border-radius:50px;font-size:14px;font-weight:600;cursor:pointer">${tab==='login'?'Se connecter':'Envoyer le code'}</button>
+                        </form>
+                    </div>
+
+                    <!-- Étape 2 : OTP inscription -->
+                    <div id="authStep2" style="display:none">
+                        <p id="authOtpDesc" style="font-size:13px;color:#6b7280;text-align:center;margin-bottom:16px"></p>
+                        <input id="authOtpInput" type="text" inputmode="numeric" maxlength="6" placeholder="· · · · · ·"
+                               style="width:100%;padding:14px;text-align:center;letter-spacing:.5em;font-size:1.2rem;font-weight:700;border:1.5px solid #e5e7eb;border-radius:12px;outline:none;box-sizing:border-box;margin-bottom:16px"
+                               onfocus="this.style.borderColor='#0d9488'" onblur="this.style.borderColor='#e5e7eb'">
+                        <button id="authOtpVerifyBtn" onclick="verifyRegisterOtp()" style="width:100%;padding:13px;background:#0d9488;color:#fff;border:none;border-radius:50px;font-size:14px;font-weight:600;cursor:pointer">Créer mon compte</button>
+                        <button onclick="showStep1()" style="display:block;width:100%;margin-top:10px;font-size:12px;color:#9ca3af;background:none;border:none;cursor:pointer;text-align:center">← Modifier mes informations</button>
+                    </div>
+
                     <button onclick="document.querySelector('[data-auth-overlay]').remove()" style="display:block;width:100%;margin-top:16px;font-size:13px;color:#9ca3af;background:none;border:none;cursor:pointer;text-align:center">Fermer</button>
                 </div>`;
             overlay.addEventListener('click', e => { if (e.target === overlay) overlay.remove(); });
             document.body.appendChild(overlay);
+        }
+
+        function showStep1() {
+            document.getElementById('authStep1').style.display = 'block';
+            document.getElementById('authStep2').style.display = 'none';
+            document.getElementById('authError').style.display = 'none';
         }
 
         function switchTab(t) {
@@ -617,12 +641,11 @@ if (typeof lucide !== 'undefined') lucide.createIcons();
             document.getElementById('fieldName').style.display = t === 'register' ? 'block' : 'none';
             document.getElementById('forgotLink').style.display = t === 'login' ? 'block' : 'none';
             document.getElementById('forgotSpacer').style.display = t === 'register' ? 'block' : 'none';
-            document.getElementById('authSubmitBtn').textContent = t === 'login' ? 'Se connecter' : 'Créer mon compte';
-            document.getElementById('tabLogin').style.background = t === 'login' ? '#0d9488' : 'transparent';
-            document.getElementById('tabLogin').style.color = t === 'login' ? '#fff' : '#6b7280';
-            document.getElementById('tabRegister').style.background = t === 'register' ? '#0d9488' : 'transparent';
-            document.getElementById('tabRegister').style.color = t === 'register' ? '#fff' : '#6b7280';
+            document.getElementById('authSubmitBtn').textContent = t === 'login' ? 'Se connecter' : 'Envoyer le code';
+            document.getElementById('tabLogin').style.cssText += ';background:' + (t==='login'?'#0d9488':'transparent') + ';color:' + (t==='login'?'#fff':'#6b7280');
+            document.getElementById('tabRegister').style.cssText += ';background:' + (t==='register'?'#0d9488':'transparent') + ';color:' + (t==='register'?'#fff':'#6b7280');
             document.getElementById('authError').style.display = 'none';
+            showStep1();
         }
 
         async function submitAuth(e) {
@@ -631,33 +654,85 @@ if (typeof lucide !== 'undefined') lucide.createIcons();
             const form = e.target;
             const btn = document.getElementById('authSubmitBtn');
             const errDiv = document.getElementById('authError');
-            const data = { email: form.email.value, password: form.password.value };
-            if (tab === 'register') { data.name = form.name.value; data.password_confirmation = form.password.value; }
-            btn.disabled = true; btn.textContent = '...';
             errDiv.style.display = 'none';
+            btn.disabled = true; btn.textContent = '…';
+
+            if (tab === 'register') {
+                // Étape 1 inscription : envoyer OTP
+                try {
+                    const res = await fetch('/inscription/send-otp', {
+                        method: 'POST',
+                        headers: {'Content-Type':'application/json','X-CSRF-TOKEN':AUTH_CSRF,'Accept':'application/json'},
+                        body: JSON.stringify({ name: form.name.value, email: form.email.value, password: form.password.value })
+                    });
+                    const json = await res.json().catch(() => ({}));
+                    if (!res.ok) {
+                        const msg = json.message || (json.errors ? Object.values(json.errors).flat().join(' ') : 'Erreur.');
+                        errDiv.textContent = msg; errDiv.style.display = 'block';
+                        btn.disabled = false; btn.textContent = 'Envoyer le code';
+                        return;
+                    }
+                    _authRegisterEmail = form.email.value;
+                    const masked = form.email.value.replace(/(.{2})(.*)(@.*)/, (_, a, b, c) => a + '*'.repeat(Math.max(2, b.length)) + c);
+                    document.getElementById('authOtpDesc').innerHTML = 'Un code à 6 chiffres a été envoyé à <strong>' + masked + '</strong>. Valable 10 minutes.';
+                    document.getElementById('authStep1').style.display = 'none';
+                    document.getElementById('authStep2').style.display = 'block';
+                    document.getElementById('authTabs').style.display = 'none';
+                    document.getElementById('authOtpInput').value = '';
+                    document.getElementById('authOtpInput').focus();
+                } catch(err) {
+                    errDiv.textContent = 'Erreur réseau.'; errDiv.style.display = 'block';
+                    btn.disabled = false; btn.textContent = 'Envoyer le code';
+                }
+                return;
+            }
+
+            // Connexion
             try {
-                const url = tab === 'login' ? '/login' : '/inscription';
-                const res = await fetch(url, {
+                const res = await fetch('/login', {
                     method: 'POST',
-                    headers: {'Content-Type':'application/json','X-CSRF-TOKEN': document.querySelector('meta[name=csrf-token]').content,'Accept':'application/json'},
-                    body: JSON.stringify(data)
+                    headers: {'Content-Type':'application/json','X-CSRF-TOKEN':AUTH_CSRF,'Accept':'application/json'},
+                    body: JSON.stringify({ email: form.email.value, password: form.password.value })
                 });
                 if (res.ok || res.redirected) {
-                    const commentText = document.getElementById('commentInput');
-                    if (commentText && commentText.value.trim()) {
-                        sessionStorage.setItem('pendingComment', commentText.value.trim());
-                    }
                     window.location.href = window.location.href.split('#')[0] + '#commentaires';
                     window.location.reload();
                     return;
                 }
                 const json = await res.json().catch(() => ({}));
-                const msg = json.message || (json.errors ? Object.values(json.errors).flat().join(' ') : 'Une erreur est survenue.');
+                const msg = json.message || (json.errors ? Object.values(json.errors).flat().join(' ') : 'Identifiants incorrects.');
                 errDiv.textContent = msg; errDiv.style.display = 'block';
-                btn.disabled = false; btn.textContent = tab === 'login' ? 'Se connecter' : 'Créer mon compte';
+                btn.disabled = false; btn.textContent = 'Se connecter';
             } catch(err) {
-                errDiv.textContent = 'Erreur réseau, réessayez.'; errDiv.style.display = 'block';
-                btn.disabled = false; btn.textContent = tab === 'login' ? 'Se connecter' : 'Créer mon compte';
+                errDiv.textContent = 'Erreur réseau.'; errDiv.style.display = 'block';
+                btn.disabled = false; btn.textContent = 'Se connecter';
+            }
+        }
+
+        async function verifyRegisterOtp() {
+            const btn = document.getElementById('authOtpVerifyBtn');
+            const errDiv = document.getElementById('authError');
+            const otp = document.getElementById('authOtpInput').value.trim();
+            if (otp.length !== 6) { errDiv.textContent = 'Entrez le code à 6 chiffres.'; errDiv.style.display = 'block'; return; }
+            btn.disabled = true; btn.textContent = '…';
+            errDiv.style.display = 'none';
+            try {
+                const res = await fetch('/inscription', {
+                    method: 'POST',
+                    headers: {'Content-Type':'application/json','X-CSRF-TOKEN':AUTH_CSRF,'Accept':'application/json'},
+                    body: JSON.stringify({ email: _authRegisterEmail, otp })
+                });
+                const json = await res.json().catch(() => ({}));
+                if (!res.ok) {
+                    errDiv.textContent = json.message || 'Code incorrect ou expiré.'; errDiv.style.display = 'block';
+                    btn.disabled = false; btn.textContent = 'Créer mon compte';
+                    return;
+                }
+                window.location.href = window.location.href.split('#')[0] + '#commentaires';
+                window.location.reload();
+            } catch(err) {
+                errDiv.textContent = 'Erreur réseau.'; errDiv.style.display = 'block';
+                btn.disabled = false; btn.textContent = 'Créer mon compte';
             }
         }
 

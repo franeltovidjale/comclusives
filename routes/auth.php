@@ -55,24 +55,52 @@ Route::middleware('guest')->group(function () {
 
     // Inscription utilisateur
     Route::get('/inscription', fn() => view('auth.register'))->name('register');
-    Route::post('/inscription', function (Request $request) {
+
+    // Étape 1 : envoyer OTP de vérification email
+    Route::post('/inscription/send-otp', function (Request $request) {
         $data = $request->validate([
             'name'     => 'required|string|max:100',
             'email'    => 'required|email|unique:users,email',
-            'password' => 'required|min:8|confirmed',
+            'password' => 'required|min:8',
         ], [
-            'email.unique'    => 'Cette adresse e-mail est déjà utilisée.',
-            'password.min'    => 'Le mot de passe doit contenir au moins 8 caractères.',
-            'password.confirmed' => 'Les mots de passe ne correspondent pas.',
+            'email.unique' => 'Cette adresse e-mail est déjà utilisée.',
+            'password.min' => 'Le mot de passe doit contenir au moins 8 caractères.',
         ]);
-        $user = \App\Models\User::create([
+        $otp = str_pad(random_int(0, 999999), 6, '0', STR_PAD_LEFT);
+        $key = 'register_otp_' . md5($data['email']);
+        \Illuminate\Support\Facades\Cache::put($key, [
+            'otp'      => $otp,
             'name'     => $data['name'],
             'email'    => $data['email'],
             'password' => bcrypt($data['password']),
+        ], now()->addMinutes(10));
+        \Illuminate\Support\Facades\Mail::to($data['email'])->send(new \App\Mail\CommentOtpMail($otp, $data['name']));
+        return response()->json(['sent' => true]);
+    })->name('register.send-otp');
+
+    // Étape 2 : valider OTP et créer le compte
+    Route::post('/inscription', function (Request $request) {
+        $data = $request->validate([
+            'email' => 'required|email',
+            'otp'   => 'required|string|size:6',
+        ]);
+        $key = 'register_otp_' . md5($data['email']);
+        $cached = \Illuminate\Support\Facades\Cache::get($key);
+        if (!$cached || $cached['otp'] !== $data['otp']) {
+            return response()->json(['message' => 'Code incorrect ou expiré.'], 422);
+        }
+        if (\App\Models\User::where('email', $cached['email'])->exists()) {
+            return response()->json(['message' => 'Cette adresse e-mail est déjà utilisée.'], 422);
+        }
+        \Illuminate\Support\Facades\Cache::forget($key);
+        $user = \App\Models\User::create([
+            'name'     => $cached['name'],
+            'email'    => $cached['email'],
+            'password' => $cached['password'],
             'role'     => 'user',
         ]);
         Auth::login($user);
-        return redirect()->route('home')->with('status', 'Bienvenue sur Comclusives !');
+        return response()->json(['ok' => true]);
     })->name('register.store');
 });
 
