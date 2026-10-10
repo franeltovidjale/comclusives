@@ -473,7 +473,11 @@
             <button id="closeShare" class="h-8 w-8 rounded-full bg-gray-100 flex items-center justify-center hover:bg-gray-200 transition"><i data-lucide="x" class="h-4 w-4"></i></button>
         </div>
         <div class="flex items-center gap-3 p-3 rounded-2xl bg-gray-50 mb-6">
+            @if($article->cover_url)
+            <img src="{{ $article->cover_url }}" alt="" class="h-12 w-12 rounded-xl object-cover shrink-0">
+            @else
             <div class="h-12 w-12 rounded-xl healing-gradient flex items-center justify-center shrink-0"><i data-lucide="book-open" class="h-5 w-5 text-white"></i></div>
+            @endif
             <div class="min-w-0">
                 <p class="text-xs text-gray-400">Comclusives · Blog</p>
                 <p class="text-sm font-semibold leading-snug truncate" id="shareArticleTitle">{{ $article->title }}</p>
