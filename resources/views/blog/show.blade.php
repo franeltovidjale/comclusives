@@ -570,7 +570,12 @@ if (typeof lucide !== 'undefined') lucide.createIcons();
                         headers: { 'X-CSRF-TOKEN': CSRF_TOKEN, 'Accept': 'application/json' }
                     });
                     const json = await res.json();
-                    if (json.already) return;
+                    if (json.already) {
+                        localStorage.setItem('liked_' + commentId, '1');
+                        setLiked(this);
+                        this.querySelector('.like-count').textContent = json.likes || '';
+                        return;
+                    }
                     localStorage.setItem('liked_' + commentId, '1');
                     setLiked(this);
                     this.dataset.count = json.likes;
