@@ -214,13 +214,16 @@
                             <h2 class="text-xl font-bold" style="font-family:Outfit,sans-serif">Commentaires</h2>
                             <span class="text-sm text-gray-400 font-medium" id="commentCount"></span>
                         </div>
+                        @auth
                         <div class="flex gap-3 mb-8">
-                            <div class="h-10 w-10 rounded-full healing-gradient shrink-0 flex items-center justify-center text-white font-bold text-sm select-none">?</div>
+                            <div class="h-10 w-10 rounded-full healing-gradient shrink-0 flex items-center justify-center text-white font-bold text-sm select-none">{{ strtoupper(substr(auth()->user()->name, 0, 2)) }}</div>
                             <div class="flex-1">
                                 <input id="commentNameInput" type="text" placeholder="Votre prénom..."
-                                       class="w-full px-0 py-1 border-b border-gray-200 bg-transparent text-sm focus:outline-none focus:border-primary transition mb-2" />
+                                       class="w-full px-0 py-1 border-b border-gray-200 bg-transparent text-sm focus:outline-none focus:border-primary transition mb-2"
+                                       value="{{ auth()->user()->name }}" />
                                 <input id="commentEmailInput" type="email" placeholder="Votre e-mail (privé, non affiché)..."
-                                       class="w-full px-0 py-1 border-b border-gray-200 bg-transparent text-sm focus:outline-none focus:border-primary transition mb-2 hidden" />
+                                       class="w-full px-0 py-1 border-b border-gray-200 bg-transparent text-sm focus:outline-none focus:border-primary transition mb-2 hidden"
+                                       value="{{ auth()->user()->email }}" />
                                 <textarea id="commentInput" rows="1" placeholder="Ajouter un commentaire public..."
                                           class="w-full px-0 py-1 border-b border-gray-200 bg-transparent text-sm focus:outline-none focus:border-primary transition resize-none leading-relaxed"
                                           style="overflow:hidden"></textarea>
@@ -230,6 +233,17 @@
                                 </div>
                             </div>
                         </div>
+                        @else
+                        <div class="flex gap-3 mb-8 p-4 rounded-2xl bg-gray-50 border border-gray-100 items-center">
+                            <div class="h-10 w-10 rounded-full bg-gray-200 shrink-0 flex items-center justify-center text-gray-400 font-bold text-sm">?</div>
+                            <div class="flex-1 text-sm text-gray-500">
+                                <a href="{{ route('register') }}" class="text-primary font-semibold hover:underline">Créer un compte</a>
+                                ou
+                                <a href="{{ route('login') }}" class="text-primary font-semibold hover:underline">se connecter</a>
+                                pour laisser un commentaire.
+                            </div>
+                        </div>
+                        @endauth
                         <div id="commentsList" class="space-y-5"></div>
                     </div>
                 </div>

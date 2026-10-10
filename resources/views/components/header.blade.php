@@ -13,7 +13,18 @@
             <a class="px-3 py-2 rounded-full text-sm font-medium text-foreground/80 hover:text-primary hover:bg-soft transition" href="https://whatsapp.com/channel/0029VbBrIFhA2pLHVsi5ul47" target="_blank">Notre chaîne</a>
         </nav>
         <div class="hidden lg:flex items-center gap-3">
-            <a class="btn-primary text-sm" href="{{ route('contact') }}">Nous contacter</a>
+            @auth
+                @if(auth()->user()->role === 'admin')
+                    <a class="text-sm font-medium text-foreground/70 hover:text-primary transition" href="{{ route('admin.dashboard') }}">Dashboard</a>
+                @endif
+                <form method="POST" action="{{ route('logout') }}" class="inline">
+                    @csrf
+                    <button type="submit" class="text-sm font-medium text-foreground/70 hover:text-primary transition">Déconnexion</button>
+                </form>
+            @else
+                <a class="text-sm font-medium text-foreground/70 hover:text-primary transition" href="{{ route('login') }}">Connexion</a>
+                <a class="btn-primary text-sm" href="{{ route('register') }}">S'inscrire</a>
+            @endauth
         </div>
         <button id="navToggle" class="lg:hidden p-2 rounded-xl hover:bg-soft"><i data-lucide="menu" class="h-6 w-6"></i></button>
     </div>
@@ -25,7 +36,18 @@
             <a class="px-4 py-3 rounded-xl text-foreground hover:bg-soft hover:text-primary" href="{{ route('learn-french') }}">Learn French</a>
             <a class="px-4 py-3 rounded-xl text-foreground hover:bg-soft hover:text-primary" href="{{ route('tamtal') }}">Tamtal</a>
             <a class="px-4 py-3 rounded-xl text-foreground hover:bg-soft hover:text-primary" href="{{ route('contact') }}">Contact</a>
-            <a class="btn-primary mt-2" href="{{ route('contact') }}">Nous contacter</a>
+            @auth
+                @if(auth()->user()->role === 'admin')
+                    <a class="px-4 py-3 rounded-xl text-foreground hover:bg-soft hover:text-primary" href="{{ route('admin.dashboard') }}">Dashboard</a>
+                @endif
+                <form method="POST" action="{{ route('logout') }}">
+                    @csrf
+                    <button type="submit" class="w-full text-left px-4 py-3 rounded-xl text-foreground hover:bg-soft hover:text-primary">Déconnexion</button>
+                </form>
+            @else
+                <a class="px-4 py-3 rounded-xl text-foreground hover:bg-soft hover:text-primary" href="{{ route('login') }}">Connexion</a>
+                <a class="btn-primary mt-2" href="{{ route('register') }}">S'inscrire</a>
+            @endauth
         </div>
     </div>
 </header>
