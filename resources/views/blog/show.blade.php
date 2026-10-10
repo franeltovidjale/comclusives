@@ -456,11 +456,14 @@ const CSRF_TOKEN = '{{ csrf_token() }}';
 if (typeof lucide !== 'undefined') lucide.createIcons();
         // ===== COMMENTAIRES =====
         const COLORS = ['#0d9488','#6366f1','#f59e0b','#ec4899','#10b981','#3b82f6','#8b5cf6'];
-        const DEMO = [
-            { name:'Adèle K.', text:'Merci pour cet article très enrichissant. La question de l\'inclusion commence vraiment au quotidien, dans nos mots et nos gestes. 🙌', date:'il y a 3 jours', likes:4, dislikes:0 },
-            { name:'Moussa D.', text:'Comclusives fait un travail remarquable pour sensibiliser aux enjeux de la communication inclusive. Continuez comme ça ! 💪', date:'il y a 1 semaine', likes:7, dislikes:1 },
-        ];
-        let totalComments = DEMO.length;
+        const COMMENTS = @json($article->approvedComments->map(fn($c) => [
+            'id'   => $c->id,
+            'name' => $c->author_name,
+            'text' => $c->body,
+            'date' => $c->created_at->diffForHumans(),
+            'likes'=> $c->likes,
+        ]));
+        let totalComments = COMMENTS.length;
 
         function initials(name) { return name.split(' ').map(w=>w[0]).join('').toUpperCase().slice(0,2); }
         function colorFor(name) { let h=0; for(let c of name) h=(h*31+c.charCodeAt(0))%COLORS.length; return COLORS[h]; }
@@ -470,6 +473,7 @@ if (typeof lucide !== 'undefined') lucide.createIcons();
             const div = document.createElement('div');
             div.className = 'group';
             div.id = id;
+            if (data.id) div.dataset.commentId = data.id;
             div.innerHTML = `
                 <div class="flex gap-3">
                     <div class="h-10 w-10 rounded-full shrink-0 flex items-center justify-center text-white font-bold text-sm select-none" style="background:${colorFor(data.name)}">${initials(data.name)}</div>
@@ -524,23 +528,26 @@ if (typeof lucide !== 'undefined') lucide.createIcons();
             const replyName = div.querySelector('.reply-name');
             const repliesDiv = div.querySelector('.replies');
 
-            // Like toggle
-            likeBtn.addEventListener('click', function() {
+            // Like toggle (persisté en base)
+            likeBtn.addEventListener('click', async function() {
                 const liked = this.dataset.liked === 'true';
-                let n = parseInt(this.dataset.count);
-                // reset dislike
-                dislikeBtn.dataset.disliked = 'false';
-                dislikeBtn.querySelector('.dislike-icon').style.fill = 'none';
-                dislikeBtn.querySelector('.dislike-icon').style.stroke = 'currentColor';
-                dislikeBtn.classList.remove('text-primary');
-                n = liked ? n - 1 : n + 1;
-                this.dataset.count = n;
-                this.dataset.liked = !liked;
-                const icon = this.querySelector('.like-icon');
-                icon.style.fill = liked ? 'none' : '#0d9488';
-                icon.style.stroke = liked ? 'currentColor' : '#0d9488';
-                this.classList.toggle('text-primary', !liked);
-                this.querySelector('.like-count').textContent = n || '';
+                if (liked) return; // un seul like par session
+                const commentId = div.dataset.commentId;
+                if (!commentId) return;
+                try {
+                    const res = await fetch(`/comments/${commentId}/like`, {
+                        method: 'POST',
+                        headers: { 'X-CSRF-TOKEN': CSRF_TOKEN, 'Accept': 'application/json' }
+                    });
+                    const json = await res.json();
+                    this.dataset.count = json.likes;
+                    this.dataset.liked = 'true';
+                    const icon = this.querySelector('.like-icon');
+                    icon.style.fill = '#0d9488';
+                    icon.style.stroke = '#0d9488';
+                    this.classList.add('text-primary');
+                    this.querySelector('.like-count').textContent = json.likes || '';
+                } catch(e) {}
             });
 
             // Dislike toggle
@@ -592,9 +599,9 @@ if (typeof lucide !== 'undefined') lucide.createIcons();
             });
         }
 
-        // Charger commentaires démo
+        // Charger commentaires depuis la base
         const commentsList = document.getElementById('commentsList');
-        DEMO.forEach(d => commentsList.appendChild(buildComment(d)));
+        COMMENTS.forEach(d => commentsList.appendChild(buildComment(d)));
 
         // Nouveau commentaire principal
         const commentInput = document.getElementById('commentInput');
@@ -616,11 +623,20 @@ if (typeof lucide !== 'undefined') lucide.createIcons();
             commentNameInput.value='';
             submitComment.disabled=true; submitComment.classList.add('opacity-40');
         });
-        submitComment.addEventListener('click', () => {
+        submitComment.addEventListener('click', async () => {
             const txt = commentInput.value.trim();
             const nm = commentNameInput.value.trim() || 'Anonyme';
-            if (!txt) return;
-            const el = buildComment({ name:nm, text:txt, date:"à l'instant", likes:0, dislikes:0 });
+            if (!txt || !nm) return;
+            submitComment.disabled = true;
+            try {
+                await fetch(COMMENT_URL, {
+                    method: 'POST',
+                    headers: {'Content-Type':'application/json','X-CSRF-TOKEN':CSRF_TOKEN,'Accept':'application/json'},
+                    body: JSON.stringify({ author_name: nm, author_email: 'anonymous@comclusives.com', body: txt })
+                });
+            } catch(e) {}
+            // Afficher en attente de modération
+            const el = buildComment({ name:nm, text:txt, date:"à l'instant (en attente de modération)", likes:0 });
             commentsList.prepend(el);
             totalComments++;
             document.getElementById('commentCount').textContent = totalComments + ' commentaires';
@@ -652,22 +668,6 @@ if (typeof lucide !== 'undefined') lucide.createIcons();
             if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); if (!submitComment.disabled) document.getElementById('commentForm').requestSubmit(); }
         });
 
-        // Post comment to backend silently
-        const submitBtn = document.getElementById('submitComment');
-        if (submitBtn) {
-            submitBtn.addEventListener('click', async function() {
-                const name = document.getElementById('commentNameInput').value.trim();
-                const body = document.getElementById('commentInput').value.trim();
-                if (!name || !body) return;
-                try {
-                    await fetch(COMMENT_URL, {
-                        method: 'POST',
-                        headers: {'Content-Type':'application/json','X-CSRF-TOKEN':CSRF_TOKEN,'Accept':'application/json'},
-                        body: JSON.stringify({ author_name: name, body: body })
-                    });
-                } catch(e) {}
-            });
-        }
 
         // shareArticleTitle already rendered server-side
 
