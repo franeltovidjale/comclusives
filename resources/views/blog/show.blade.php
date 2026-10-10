@@ -543,6 +543,22 @@ if (typeof lucide !== 'undefined') lucide.createIcons();
             likeBtn.classList.add('text-primary');
         }
 
+        function clearDislike(dislikeBtn) {
+            dislikeBtn.dataset.disliked = 'false';
+            const icon = dislikeBtn.querySelector('.dislike-icon');
+            icon.style.fill = 'none';
+            icon.style.stroke = 'currentColor';
+            dislikeBtn.classList.remove('text-foreground/70');
+        }
+
+        function clearLike(likeBtn) {
+            likeBtn.dataset.liked = 'false';
+            const icon = likeBtn.querySelector('.like-icon');
+            icon.style.fill = 'none';
+            icon.style.stroke = 'currentColor';
+            likeBtn.classList.remove('text-primary');
+        }
+
         function wireComment(div) {
             const likeBtn = div.querySelector('.like-btn');
             const dislikeBtn = div.querySelector('.dislike-btn');
@@ -573,13 +589,10 @@ if (typeof lucide !== 'undefined') lucide.createIcons();
                     if (json.liked) {
                         localStorage.setItem('liked_' + commentId, '1');
                         setLiked(this);
+                        clearDislike(dislikeBtn);
                     } else {
                         localStorage.removeItem('liked_' + commentId);
-                        this.dataset.liked = 'false';
-                        const icon = this.querySelector('.like-icon');
-                        icon.style.fill = 'none';
-                        icon.style.stroke = 'currentColor';
-                        this.classList.remove('text-primary');
+                        clearLike(this);
                     }
                 } catch(e) {}
             });
@@ -587,15 +600,17 @@ if (typeof lucide !== 'undefined') lucide.createIcons();
             // Dislike toggle
             dislikeBtn.addEventListener('click', function() {
                 const disliked = this.dataset.disliked === 'true';
-                likeBtn.dataset.liked = 'false';
-                likeBtn.querySelector('.like-icon').style.fill = 'none';
-                likeBtn.querySelector('.like-icon').style.stroke = 'currentColor';
-                likeBtn.classList.remove('text-primary');
-                this.dataset.disliked = !disliked;
-                const icon = this.querySelector('.dislike-icon');
-                icon.style.fill = disliked ? 'none' : '#6b7280';
-                icon.style.stroke = disliked ? 'currentColor' : '#6b7280';
-                this.classList.toggle('text-foreground/70', !disliked);
+                clearLike(likeBtn);
+                localStorage.removeItem('liked_' + commentId);
+                if (disliked) {
+                    clearDislike(this);
+                } else {
+                    this.dataset.disliked = 'true';
+                    const icon = this.querySelector('.dislike-icon');
+                    icon.style.fill = '#6b7280';
+                    icon.style.stroke = '#6b7280';
+                    this.classList.add('text-foreground/70');
+                }
             });
 
             // Répondre
