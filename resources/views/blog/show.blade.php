@@ -60,7 +60,7 @@
 @media (max-width: 767px) { .article-sidebar { display: none !important; } }
 
 /* Article prose */
-.article-prose { font-size: 1.0625rem; line-height: 1.85; color: #374151; }
+.article-prose { font-size: 1.0625rem; line-height: 1.85; color: #374151; overflow-x: hidden; word-break: break-word; }
 .article-prose p { margin-bottom: 1.4rem; }
 .article-prose h2 { font-family:Outfit,sans-serif; font-size:1.5rem; font-weight:700; color:#111827; margin:2.5rem 0 1rem; padding-bottom:.5rem; border-bottom:2px solid #e5f0ef; }
 .article-prose h3 { font-family:Outfit,sans-serif; font-size:1.2rem; font-weight:700; color:#111827; margin:2rem 0 .75rem; }
@@ -81,6 +81,8 @@
 .article-prose td { padding:.75rem 1rem; border-bottom:1px solid #e5e7eb; }
 .article-prose tr:nth-child(even) td { background:#f9fafb; }
 .article-prose hr { border:none; border-top:2px solid #e5f0ef; margin:2.5rem 0; }
+.article-prose iframe, .article-prose video { max-width:100%; width:100%; border-radius:12px; }
+.article-prose pre, .article-prose code { overflow-x:auto; max-width:100%; white-space:pre-wrap; word-break:break-word; }
 
 .popular-post:hover .popular-title { color:#0a6b63; }
 @keyframes slideUp { from{transform:translateY(40px);opacity:0} to{transform:translateY(0);opacity:1} }
