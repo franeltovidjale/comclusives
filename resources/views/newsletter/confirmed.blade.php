@@ -3,7 +3,7 @@
 @section('title', 'Abonnement confirmé – Comclusives')
 
 @section('content')
-<div class="min-h-[60vh] flex items-center justify-center px-4">
+<div class="min-h-[60vh] flex items-center justify-center px-4 pt-24">
     <div class="text-center max-w-md">
         <div style="height:6px;width:60px;border-radius:3px;background:#0d9488;margin:0 auto 32px;"></div>
         <h1 class="text-3xl font-bold mb-3">Abonnement confirmé</h1>
