@@ -45,6 +45,7 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
 
     Route::get('categories', [Admin\CategoryController::class, 'index'])->name('categories.index');
     Route::post('categories', [Admin\CategoryController::class, 'store'])->name('categories.store');
+    Route::patch('categories/{category}', [Admin\CategoryController::class, 'update'])->name('categories.update');
     Route::delete('categories/{category}', [Admin\CategoryController::class, 'destroy'])->name('categories.destroy');
 
     Route::get('subscribers', [Admin\SubscriberController::class, 'index'])->name('subscribers.index');

@@ -33,17 +33,37 @@
     {{-- Liste --}}
     <div class="bg-white rounded-2xl border border-gray-100 divide-y divide-gray-50">
         @forelse($categories as $cat)
-        <div class="flex items-center justify-between px-5 py-3 group">
+        <div class="flex items-center justify-between px-5 py-3">
             <div class="flex items-center gap-3">
                 <span class="h-3 w-3 rounded-full shrink-0" style="background:{{ $cat->color }}"></span>
                 <span class="font-medium text-sm">{{ $cat->name }}</span>
-                <span class="text-xs text-gray-400">{{ $cat->articles_count }} article{{ $cat->articles_count > 1 ? 's' : '' }}</span>
+                <span class="text-xs" style="color:#9ca3af">{{ $cat->articles_count }} article{{ $cat->articles_count > 1 ? 's' : '' }}</span>
             </div>
-            <form method="POST" action="{{ route('admin.categories.destroy', $cat) }}"
-                  onsubmit="event.preventDefault(); confirmDelete(this, '{{ addslashes($cat->name) }}')">
-                @csrf @method('DELETE')
-                <button type="submit" style="font-size:.75rem;color:#f87171;background:none;border:none;cursor:pointer;padding:0">Supprimer</button>
-            </form>
+            <div style="display:flex;align-items:center;gap:.75rem">
+                {{-- Éditer --}}
+                <button onclick="openEdit({{ $cat->id }}, '{{ addslashes($cat->name) }}', '{{ $cat->color }}')"
+                        title="Renommer"
+                        style="background:none;border:none;cursor:pointer;padding:4px;color:#6b7280;display:flex;align-items:center">
+                    <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                        <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
+                        <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
+                    </svg>
+                </button>
+                {{-- Supprimer --}}
+                <form method="POST" action="{{ route('admin.categories.destroy', $cat) }}"
+                      onsubmit="event.preventDefault(); confirmDelete(this, '{{ addslashes($cat->name) }}')">
+                    @csrf @method('DELETE')
+                    <button type="submit" title="Supprimer"
+                            style="background:none;border:none;cursor:pointer;padding:4px;color:#f87171;display:flex;align-items:center">
+                        <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                            <polyline points="3 6 5 6 21 6"/>
+                            <path d="M19 6l-1 14H6L5 6"/>
+                            <path d="M10 11v6"/><path d="M14 11v6"/>
+                            <path d="M9 6V4h6v2"/>
+                        </svg>
+                    </button>
+                </form>
+            </div>
         </div>
         @empty
         <p class="px-5 py-8 text-center text-sm text-gray-400">Aucune catégorie.</p>
@@ -53,6 +73,7 @@
 @endsection
 
 @push('scripts')
+{{-- Modal suppression --}}
 <div id="deleteCatModal" style="display:none;position:fixed;inset:0;z-index:9999;align-items:center;justify-content:center;background:rgba(0,0,0,0.4)">
     <div style="background:#fff;border-radius:1.25rem;padding:2rem;max-width:380px;width:90%;text-align:center;box-shadow:0 20px 60px rgba(0,0,0,0.2)">
         <div style="width:48px;height:48px;background:#fef2f2;border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 1rem">
@@ -66,13 +87,36 @@
         </div>
     </div>
 </div>
+
+{{-- Modal édition --}}
+<div id="editCatModal" style="display:none;position:fixed;inset:0;z-index:9999;align-items:center;justify-content:center;background:rgba(0,0,0,0.4)">
+    <div style="background:#fff;border-radius:1.25rem;padding:2rem;max-width:400px;width:90%;box-shadow:0 20px 60px rgba(0,0,0,0.2)">
+        <h3 style="font-weight:700;font-size:1.1rem;margin-bottom:1.25rem">Modifier la catégorie</h3>
+        <div style="margin-bottom:1rem">
+            <label style="font-size:.75rem;font-weight:600;color:#6b7280;display:block;margin-bottom:.35rem">Nom</label>
+            <input id="editCatName" type="text" style="width:100%;padding:.55rem .75rem;border-radius:.75rem;border:1px solid #e5e7eb;font-size:.875rem;outline:none;box-sizing:border-box">
+        </div>
+        <div style="margin-bottom:1.5rem">
+            <label style="font-size:.75rem;font-weight:600;color:#6b7280;display:block;margin-bottom:.35rem">Couleur</label>
+            <input id="editCatColor" type="color" style="height:40px;width:56px;border-radius:.75rem;border:1px solid #e5e7eb;cursor:pointer;padding:2px">
+        </div>
+        <div id="editCatError" style="color:#ef4444;font-size:.8rem;margin-bottom:.75rem;display:none"></div>
+        <div style="display:flex;gap:.75rem;justify-content:flex-end">
+            <button onclick="closeEditModal()" style="padding:.6rem 1.4rem;border-radius:9999px;border:1px solid #e5e7eb;background:#fff;font-size:.875rem;cursor:pointer">Annuler</button>
+            <button id="editCatSaveBtn" style="padding:.6rem 1.4rem;border-radius:9999px;border:none;background:#0a6b63;color:#fff;font-size:.875rem;font-weight:600;cursor:pointer">Enregistrer</button>
+        </div>
+    </div>
+</div>
+
 <script>
 var _pendingDeleteForm = null;
+var _editCatId = null;
+
+// ── Suppression ──
 function confirmDelete(form, name) {
     _pendingDeleteForm = form;
     document.getElementById('deleteCatTitle').textContent = 'Supprimer "' + name + '" ?';
-    var modal = document.getElementById('deleteCatModal');
-    modal.style.display = 'flex';
+    document.getElementById('deleteCatModal').style.display = 'flex';
 }
 function closeCatModal() {
     document.getElementById('deleteCatModal').style.display = 'none';
@@ -83,6 +127,50 @@ document.getElementById('deleteCatConfirmBtn').addEventListener('click', functio
 });
 document.getElementById('deleteCatModal').addEventListener('click', function(e) {
     if (e.target === this) closeCatModal();
+});
+
+// ── Édition ──
+function openEdit(id, name, color) {
+    _editCatId = id;
+    document.getElementById('editCatName').value = name;
+    document.getElementById('editCatColor').value = color;
+    document.getElementById('editCatError').style.display = 'none';
+    document.getElementById('editCatModal').style.display = 'flex';
+    setTimeout(function(){ document.getElementById('editCatName').focus(); }, 50);
+}
+function closeEditModal() {
+    document.getElementById('editCatModal').style.display = 'none';
+    _editCatId = null;
+}
+document.getElementById('editCatModal').addEventListener('click', function(e) {
+    if (e.target === this) closeEditModal();
+});
+document.getElementById('editCatSaveBtn').addEventListener('click', async function() {
+    var btn = this;
+    var name = document.getElementById('editCatName').value.trim();
+    var color = document.getElementById('editCatColor').value;
+    var errEl = document.getElementById('editCatError');
+    if (!name) { errEl.textContent = 'Le nom est requis.'; errEl.style.display = 'block'; return; }
+    btn.textContent = '…';
+    btn.disabled = true;
+    var token = document.querySelector('meta[name="csrf-token"]').content;
+    try {
+        var res = await fetch('/admin/categories/' + _editCatId, {
+            method: 'POST',
+            headers: {'Content-Type':'application/json','X-CSRF-TOKEN':token,'X-HTTP-Method-Override':'PATCH','Accept':'application/json'},
+            body: JSON.stringify({name, color, _method:'PATCH'})
+        });
+        var data = await res.json();
+        if (!res.ok) {
+            errEl.textContent = data.errors?.name?.[0] || 'Erreur.';
+            errEl.style.display = 'block';
+        } else {
+            closeEditModal();
+            location.reload();
+        }
+    } catch(e) { errEl.textContent = 'Erreur réseau.'; errEl.style.display = 'block'; }
+    btn.textContent = 'Enregistrer';
+    btn.disabled = false;
 });
 </script>
 @endpush

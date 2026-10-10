@@ -29,6 +29,19 @@ class CategoryController extends Controller
         return back()->with('success', 'Catégorie créée.');
     }
 
+    public function update(Request $request, Category $category)
+    {
+        $data = $request->validate([
+            'name'  => 'required|string|max:100|unique:categories,name,'.$category->id,
+            'color' => 'nullable|string|max:7',
+        ]);
+        $category->update([
+            'name'  => $data['name'],
+            'color' => $data['color'] ?? $category->color,
+        ]);
+        return response()->json(['name' => $category->name, 'color' => $category->color]);
+    }
+
     public function destroy(Category $category)
     {
         $category->delete();
