@@ -493,6 +493,7 @@ if (typeof lucide !== 'undefined') lucide.createIcons();
         const COLORS = ['#0d9488','#6366f1','#f59e0b','#ec4899','#10b981','#3b82f6','#8b5cf6'];
         const COMMENTS = @json($comments);
         const IS_AUTH = @json(auth()->check());
+        const AUTH_NAME = @json(auth()->check() ? auth()->user()->name : '');
         let totalComments = COMMENTS.length;
 
         function initials(name) { return name.split(' ').map(w=>w[0]).join('').toUpperCase().slice(0,2); }
@@ -531,7 +532,7 @@ if (typeof lucide !== 'undefined') lucide.createIcons();
                         <div class="reply-box hidden mt-3 flex gap-2">
                             <div class="h-8 w-8 rounded-full shrink-0 flex items-center justify-center text-white text-xs font-bold healing-gradient select-none">?</div>
                             <div class="flex-1">
-                                <input type="text" placeholder="Votre prénom..." class="reply-name w-full px-0 py-0.5 border-b border-border bg-transparent text-xs focus:outline-none focus:border-primary mb-1 transition" />
+                                <p class="text-xs text-gray-400 mb-1 font-medium auth-reply-name"></p>
                                 <textarea placeholder="Ajouter une réponse..." rows="1" class="reply-input w-full px-0 py-0.5 border-b border-border bg-transparent text-sm focus:outline-none focus:border-primary resize-none transition leading-relaxed" style="overflow:hidden"></textarea>
                                 <div class="flex justify-end gap-2 mt-2">
                                     <button class="reply-cancel px-3 py-1.5 rounded-full text-xs font-semibold text-foreground/60 hover:bg-soft transition">Annuler</button>
@@ -585,7 +586,8 @@ if (typeof lucide !== 'undefined') lucide.createIcons();
             const replyCancel = div.querySelector('.reply-cancel');
             const replySubmit = div.querySelector('.reply-submit');
             const replyInput = div.querySelector('.reply-input');
-            const replyName = div.querySelector('.reply-name');
+            const authReplyName = div.querySelector('.auth-reply-name');
+            if (authReplyName) authReplyName.textContent = AUTH_NAME;
             const repliesDiv = div.querySelector('.replies');
 
             // Restaurer l'état liked depuis localStorage
@@ -666,7 +668,7 @@ if (typeof lucide !== 'undefined') lucide.createIcons();
                 replyBox.classList.toggle('hidden');
                 if (!replyBox.classList.contains('hidden')) replyInput.focus();
             });
-            replyCancel.addEventListener('click', () => { replyBox.classList.add('hidden'); replyInput.value=''; replyName.value=''; replySubmit.disabled=true; replySubmit.classList.add('opacity-40'); });
+            replyCancel.addEventListener('click', () => { replyBox.classList.add('hidden'); replyInput.value=''; replySubmit.disabled=true; replySubmit.classList.add('opacity-40'); });
             replyInput.addEventListener('input', function() {
                 replySubmit.disabled = !this.value.trim();
                 replySubmit.classList.toggle('opacity-40', !this.value.trim());
@@ -674,7 +676,7 @@ if (typeof lucide !== 'undefined') lucide.createIcons();
             });
             replySubmit.addEventListener('click', () => {
                 const txt = replyInput.value.trim();
-                const nm = replyName.value.trim() || 'Anonyme';
+                const nm = AUTH_NAME || 'Anonyme';
                 if (!txt) return;
                 const rDiv = document.createElement('div');
                 rDiv.className = 'flex gap-3';
@@ -689,7 +691,7 @@ if (typeof lucide !== 'undefined') lucide.createIcons();
                         </div>
                     </div>`;
                 repliesDiv.appendChild(rDiv);
-                replyBox.classList.add('hidden'); replyInput.value=''; replyName.value='';
+                replyBox.classList.add('hidden'); replyInput.value='';
                 replySubmit.disabled=true; replySubmit.classList.add('opacity-40');
                 totalComments++;
                 document.getElementById('commentCount').textContent = totalComments + ' commentaires';
