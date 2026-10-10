@@ -879,9 +879,34 @@ if (typeof lucide !== 'undefined') lucide.createIcons();
             const txt = commentInput.value.trim();
             const nm = commentNameInput.value.trim() || 'Anonyme';
             const em = commentEmailInput.value.trim();
-            if (!txt || !em) return;
+            if (!txt) return;
             submitComment.disabled = true;
             submitComment.textContent = 'Envoi…';
+
+            // Utilisateur connecté : soumission directe sans OTP
+            if (IS_AUTH) {
+                try {
+                    const res = await fetch(COMMENT_URL, {
+                        method: 'POST',
+                        headers: {'Content-Type':'application/json','X-CSRF-TOKEN':CSRF_TOKEN,'Accept':'application/json'},
+                        body: JSON.stringify({ body: txt })
+                    });
+                    if (!res.ok) throw new Error();
+                    const el = buildComment({ name: nm, text: txt, date: "à l'instant (en attente de modération)", likes: 0 });
+                    commentsList.prepend(el);
+                    totalComments++;
+                    document.getElementById('commentCount').textContent = totalComments + ' commentaire' + (totalComments > 1 ? 's' : '');
+                    cancelComment.click();
+                    el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                } catch(e) {
+                    submitComment.textContent = 'Commenter';
+                    submitComment.disabled = false;
+                }
+                return;
+            }
+
+            // Visiteur : OTP anti-spam
+            if (!em) return;
             try {
                 const res = await fetch(OTP_URL, {
                     method: 'POST',

@@ -40,6 +40,21 @@ class CommentController extends Controller
     {
         $article = Article::published()->where('slug', $slug)->firstOrFail();
 
+        // Utilisateur connecté : pas d'OTP nécessaire
+        if (auth()->check()) {
+            $request->validate(['body' => 'required|string|max:2000', 'parent_id' => 'nullable|exists:comments,id']);
+            $user = auth()->user();
+            $comment = $article->comments()->create([
+                'author_name'  => $user->name,
+                'author_email' => $user->email,
+                'body'         => $request->input('body'),
+                'parent_id'    => $request->input('parent_id'),
+                'approved'     => false,
+            ]);
+            return response()->json(['message' => 'Commentaire soumis, en attente de modération.']);
+        }
+
+        // Visiteur : vérification OTP
         $data = $request->validate([
             'author_name'  => 'required|string|max:100',
             'author_email' => 'required|email|max:255',
