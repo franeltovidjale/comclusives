@@ -400,7 +400,7 @@
 {{-- OTP Modal --}}
 <div id="otpModal" class="fixed inset-0 z-50 hidden items-center justify-center">
     <div id="otpOverlay" class="absolute inset-0 bg-black/50" style="backdrop-filter:blur(4px)"></div>
-    <div class="relative w-full max-w-sm mx-4 bg-white rounded-3xl shadow-2xl p-8">
+    <div class="relative w-full max-w-sm mx-4 bg-white rounded-3xl shadow-2xl p-8 overflow-hidden">
         <div class="text-center mb-6">
             <div style="width:48px;height:4px;background:#0d9488;border-radius:2px;margin:0 auto 20px;"></div>
             <h3 class="font-bold text-xl text-gray-900 mb-1">Vérifiez votre e-mail</h3>
