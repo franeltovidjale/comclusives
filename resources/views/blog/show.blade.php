@@ -231,14 +231,9 @@
                             </div>
                         </div>
                         @else
-                        <div class="flex gap-3 mb-8 p-4 rounded-2xl bg-gray-50 border border-gray-100 items-center">
+                        <div onclick="showLoginPrompt('login')" class="flex gap-3 mb-8 p-4 rounded-2xl bg-gray-50 border border-gray-100 items-center cursor-pointer hover:border-primary/30 transition">
                             <div class="h-10 w-10 rounded-full bg-gray-200 shrink-0 flex items-center justify-center text-gray-400 font-bold text-sm">?</div>
-                            <div class="flex-1 text-sm text-gray-500">
-                                <a href="{{ route('register') }}" class="text-primary font-semibold hover:underline">Créer un compte</a>
-                                ou
-                                <a href="{{ route('login') }}" class="text-primary font-semibold hover:underline">se connecter</a>
-                                pour laisser un commentaire.
-                            </div>
+                            <div class="flex-1 text-sm text-gray-400">Ajouter un commentaire public...</div>
                         </div>
                         @endauth
                         <div id="commentsList" class="space-y-5"></div>
@@ -606,21 +601,92 @@ if (typeof lucide !== 'undefined') lucide.createIcons();
                 return res.json();
             }
 
-            function showLoginPrompt() {
+            function showLoginPrompt(tab) {
+                tab = tab || 'login';
+                const existing = document.querySelector('[data-auth-overlay]');
+                if (existing) { existing.remove(); }
+                const CSRF = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
                 const overlay = document.createElement('div');
                 overlay.style.cssText = 'position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,0.5);display:flex;align-items:center;justify-content:center;padding:16px';
+                overlay.dataset.authOverlay = '1';
                 overlay.innerHTML = `
-                    <div style="background:#fff;border-radius:24px;padding:40px 32px;max-width:360px;width:100%;text-align:center;box-shadow:0 24px 60px rgba(0,0,0,0.2)">
+                    <div style="background:#fff;border-radius:24px;padding:32px;max-width:380px;width:100%;box-shadow:0 24px 60px rgba(0,0,0,0.2)">
                         <div style="width:48px;height:4px;background:#0d9488;border-radius:2px;margin:0 auto 24px"></div>
-                        <h3 style="font-size:20px;font-weight:700;margin:0 0 8px;font-family:Outfit,sans-serif">Rejoignez la communauté</h3>
-                        <p style="font-size:14px;color:#6b7280;margin:0 0 28px;line-height:1.6">Créez un compte gratuit pour liker, commenter et interagir avec nos articles.</p>
-                        <a href="/inscription" style="display:block;width:100%;padding:12px;background:#0d9488;color:#fff;border-radius:50px;font-size:14px;font-weight:600;text-decoration:none;margin-bottom:10px">Créer un compte</a>
-                        <a href="/login" style="display:block;width:100%;padding:12px;background:#f3f4f6;color:#374151;border-radius:50px;font-size:14px;font-weight:600;text-decoration:none">Se connecter</a>
-                        <button onclick="this.closest('[data-overlay]').remove()" style="margin-top:20px;font-size:13px;color:#9ca3af;background:none;border:none;cursor:pointer">Fermer</button>
+                        <div style="display:flex;border:1px solid #e5e7eb;border-radius:50px;padding:4px;margin-bottom:24px;gap:4px">
+                            <button id="tabLogin" onclick="switchTab('login')" style="flex:1;padding:8px;border-radius:50px;border:none;font-size:13px;font-weight:600;cursor:pointer;transition:all .2s;background:${tab==='login'?'#0d9488':'transparent'};color:${tab==='login'?'#fff':'#6b7280'}">Connexion</button>
+                            <button id="tabRegister" onclick="switchTab('register')" style="flex:1;padding:8px;border-radius:50px;border:none;font-size:13px;font-weight:600;cursor:pointer;transition:all .2s;background:${tab==='register'?'#0d9488':'transparent'};color:${tab==='register'?'#fff':'#6b7280'}">Inscription</button>
+                        </div>
+                        <div id="authError" style="display:none;background:#fef2f2;border:1px solid #fecaca;color:#dc2626;border-radius:12px;padding:10px 14px;font-size:13px;margin-bottom:16px"></div>
+                        <form id="authForm" onsubmit="submitAuth(event)">
+                            <input type="hidden" id="authTab" value="${tab}">
+                            <div id="fieldName" style="display:${tab==='register'?'block':'none'};margin-bottom:12px">
+                                <input name="name" type="text" placeholder="Votre prénom ou pseudo" style="width:100%;padding:12px 16px;border:1.5px solid #e5e7eb;border-radius:12px;font-size:14px;outline:none;box-sizing:border-box" onfocus="this.style.borderColor='#0d9488'" onblur="this.style.borderColor='#e5e7eb'">
+                            </div>
+                            <div style="margin-bottom:12px">
+                                <input name="email" type="email" placeholder="Adresse e-mail" required style="width:100%;padding:12px 16px;border:1.5px solid #e5e7eb;border-radius:12px;font-size:14px;outline:none;box-sizing:border-box" onfocus="this.style.borderColor='#0d9488'" onblur="this.style.borderColor='#e5e7eb'">
+                            </div>
+                            <div style="margin-bottom:6px">
+                                <input name="password" type="password" placeholder="Mot de passe" required minlength="8" style="width:100%;padding:12px 16px;border:1.5px solid #e5e7eb;border-radius:12px;font-size:14px;outline:none;box-sizing:border-box" onfocus="this.style.borderColor='#0d9488'" onblur="this.style.borderColor='#e5e7eb'">
+                            </div>
+                            <div id="forgotLink" style="text-align:right;margin-bottom:16px;display:${tab==='login'?'block':'none'}">
+                                <a href="/forgot-password" style="font-size:12px;color:#0d9488;text-decoration:none">Mot de passe oublié ?</a>
+                            </div>
+                            <div id="forgotSpacer" style="height:16px;display:${tab==='register'?'block':'none'}"></div>
+                            <button type="submit" id="authSubmitBtn" style="width:100%;padding:13px;background:#0d9488;color:#fff;border:none;border-radius:50px;font-size:14px;font-weight:600;cursor:pointer">${tab==='login'?'Se connecter':'Créer mon compte'}</button>
+                        </form>
+                        <button onclick="document.querySelector('[data-auth-overlay]').remove()" style="display:block;width:100%;margin-top:16px;font-size:13px;color:#9ca3af;background:none;border:none;cursor:pointer;text-align:center">Fermer</button>
                     </div>`;
-                overlay.dataset.overlay = '1';
                 overlay.addEventListener('click', e => { if (e.target === overlay) overlay.remove(); });
                 document.body.appendChild(overlay);
+            }
+
+            function switchTab(t) {
+                document.getElementById('authTab').value = t;
+                document.getElementById('fieldName').style.display = t === 'register' ? 'block' : 'none';
+                document.getElementById('forgotLink').style.display = t === 'login' ? 'block' : 'none';
+                document.getElementById('forgotSpacer').style.display = t === 'register' ? 'block' : 'none';
+                document.getElementById('authSubmitBtn').textContent = t === 'login' ? 'Se connecter' : 'Créer mon compte';
+                document.getElementById('tabLogin').style.background = t === 'login' ? '#0d9488' : 'transparent';
+                document.getElementById('tabLogin').style.color = t === 'login' ? '#fff' : '#6b7280';
+                document.getElementById('tabRegister').style.background = t === 'register' ? '#0d9488' : 'transparent';
+                document.getElementById('tabRegister').style.color = t === 'register' ? '#fff' : '#6b7280';
+                document.getElementById('authError').style.display = 'none';
+            }
+
+            async function submitAuth(e) {
+                e.preventDefault();
+                const tab = document.getElementById('authTab').value;
+                const form = e.target;
+                const btn = document.getElementById('authSubmitBtn');
+                const errDiv = document.getElementById('authError');
+                const data = { email: form.email.value, password: form.password.value };
+                if (tab === 'register') data.name = form.name.value;
+                btn.disabled = true; btn.textContent = '...';
+                errDiv.style.display = 'none';
+                try {
+                    const url = tab === 'login' ? '/login' : '/inscription';
+                    const res = await fetch(url, {
+                        method: 'POST',
+                        headers: {'Content-Type':'application/json','X-CSRF-TOKEN': document.querySelector('meta[name=csrf-token]').content,'Accept':'application/json'},
+                        body: JSON.stringify(data)
+                    });
+                    if (res.ok || res.redirected) {
+                        const commentText = document.getElementById('commentInput');
+                        if (commentText && commentText.value.trim()) {
+                            sessionStorage.setItem('pendingComment', commentText.value.trim());
+                        }
+                        window.location.href = window.location.href.split('#')[0] + '#commentaires';
+                        window.location.reload();
+                        return;
+                    }
+                    const json = await res.json().catch(() => ({}));
+                    const msg = json.message || (json.errors ? Object.values(json.errors).flat().join(' ') : 'Une erreur est survenue.');
+                    errDiv.textContent = msg; errDiv.style.display = 'block';
+                    btn.disabled = false; btn.textContent = tab === 'login' ? 'Se connecter' : 'Créer mon compte';
+                } catch(err) {
+                    errDiv.textContent = 'Erreur réseau, réessayez.'; errDiv.style.display = 'block';
+                    btn.disabled = false; btn.textContent = tab === 'login' ? 'Se connecter' : 'Créer mon compte';
+                }
             }
 
             // Like toggle
@@ -710,6 +776,19 @@ if (typeof lucide !== 'undefined') lucide.createIcons();
         const cancelComment = document.getElementById('cancelComment');
 
         const commentEmailInput = document.getElementById('commentEmailInput');
+
+        // Restore pending comment after login/register
+        const pendingComment = sessionStorage.getItem('pendingComment');
+        if (pendingComment) {
+            sessionStorage.removeItem('pendingComment');
+            commentInput.value = pendingComment;
+            commentActions.classList.remove('hidden');
+            submitComment.disabled = false;
+            submitComment.classList.remove('opacity-40');
+            commentInput.style.height = 'auto';
+            commentInput.style.height = Math.min(commentInput.scrollHeight, 120) + 'px';
+            commentInput.focus();
+        }
 
         commentInput.addEventListener('focus', () => {
             commentActions.classList.remove('hidden');
