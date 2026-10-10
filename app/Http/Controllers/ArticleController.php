@@ -70,7 +70,35 @@ class ArticleController extends Controller
     public function sitemap()
     {
         $articles = Article::published()->latest('published_at')->get(['slug','updated_at']);
-        return response()->view('sitemap', compact('articles'))
-            ->header('Content-Type', 'application/xml');
+
+        $urls = collect([
+            ['loc' => url('/'),         'changefreq' => 'weekly',  'priority' => '1.0'],
+            ['loc' => url('/blog'),     'changefreq' => 'daily',   'priority' => '0.9'],
+            ['loc' => url('/a-propos'), 'changefreq' => 'monthly', 'priority' => '0.7'],
+        ]);
+
+        $xml = '<?xml version="1.0" encoding="UTF-8"?>'."\n";
+        $xml .= '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">'."\n";
+
+        foreach ($urls as $u) {
+            $xml .= "  <url>\n";
+            $xml .= "    <loc>{$u['loc']}</loc>\n";
+            $xml .= "    <changefreq>{$u['changefreq']}</changefreq>\n";
+            $xml .= "    <priority>{$u['priority']}</priority>\n";
+            $xml .= "  </url>\n";
+        }
+
+        foreach ($articles as $article) {
+            $xml .= "  <url>\n";
+            $xml .= "    <loc>".url('/blog/'.$article->slug)."</loc>\n";
+            $xml .= "    <lastmod>{$article->updated_at->toAtomString()}</lastmod>\n";
+            $xml .= "    <changefreq>monthly</changefreq>\n";
+            $xml .= "    <priority>0.8</priority>\n";
+            $xml .= "  </url>\n";
+        }
+
+        $xml .= '</urlset>';
+
+        return response($xml, 200)->header('Content-Type', 'application/xml');
     }
 }
