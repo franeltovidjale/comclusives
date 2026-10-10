@@ -1034,18 +1034,16 @@ if (typeof lucide !== 'undefined') lucide.createIcons();
         const rawUrl = window.location.href;
         function openShareModal() { shareModal.classList.remove('hidden'); shareModal.classList.add('flex'); document.body.style.overflow='hidden'; }
         function closeShareModal() { shareModal.classList.add('hidden'); shareModal.classList.remove('flex'); document.body.style.overflow=''; }
-        shareBtn.addEventListener('click', async () => {
+        shareBtn.addEventListener('click', function() {
             if (navigator.share) {
-                try {
-                    await navigator.share({
-                        title: '{{ addslashes($article->title) }}',
-                        text: '{{ addslashes(Str::limit(strip_tags($article->excerpt ?? ''), 100)) }}',
-                        url: window.location.href
-                    });
-                    return;
-                } catch(e) {
-                    if (e.name === 'AbortError') return; // user cancelled
-                }
+                navigator.share({
+                    title: '{{ addslashes($article->title) }}',
+                    text: '{{ addslashes(Str::limit(strip_tags($article->excerpt ?? ''), 100)) }}',
+                    url: window.location.href
+                }).catch(function(e) {
+                    if (e.name !== 'AbortError') openShareModal();
+                });
+                return;
             }
             openShareModal();
         });
