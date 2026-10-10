@@ -24,7 +24,11 @@ class SubscriberController extends Controller
             Mail::to($sub->email)->send(new \App\Mail\ConfirmSubscriptionMail($sub));
         }
 
-        return back()->with('newsletter_success', 'Vérifiez votre boîte mail pour confirmer votre abonnement.');
+        $msg = 'Vérifiez votre boîte mail pour confirmer votre abonnement.';
+        if ($request->expectsJson()) {
+            return response()->json(['message' => $msg]);
+        }
+        return back()->with('newsletter_success', $msg);
     }
 
     public function confirm(string $token)

@@ -9,14 +9,35 @@
                     <span class="text-2xl font-bold tracking-tight" style="font-family:Outfit,sans-serif">Com<span class="text-accent">clusives</span></span>
                 </a>
                 <p class="text-secondary-foreground/70 max-w-sm leading-relaxed">Comclusives favorise la communication inclusive, la diversité et l'égalité des chances.</p>
-                <form class="flex flex-col sm:flex-row gap-2 max-w-sm w-full" method="POST" action="{{ route('newsletter.subscribe') }}">
-                    @csrf
-                    <input type="email" name="email" required placeholder="Votre adresse e-mail" class="flex-1 w-full px-4 py-3 rounded-full bg-white/10 border border-white/15 placeholder-white/50 text-sm focus:outline-none focus:border-primary transition">
-                    <button class="btn-primary text-sm px-5 whitespace-nowrap">S'abonner</button>
+                <form id="newsletterForm" class="flex flex-col sm:flex-row gap-2 max-w-sm w-full">
+                    <input type="email" id="newsletterEmail" required placeholder="Votre adresse e-mail" class="flex-1 w-full px-4 py-3 rounded-full bg-white/10 border border-white/15 placeholder-white/50 text-sm focus:outline-none focus:border-primary transition">
+                    <button type="submit" id="newsletterBtn" class="btn-primary text-sm px-5 whitespace-nowrap">S'abonner</button>
                 </form>
-                @if(session('newsletter_success'))
-                    <p class="text-green-400 text-sm">{{ session('newsletter_success') }}</p>
-                @endif
+                <p id="newsletterMsg" class="text-sm hidden"></p>
+                <script>
+                document.getElementById('newsletterForm').addEventListener('submit', async function(e) {
+                    e.preventDefault();
+                    const email = document.getElementById('newsletterEmail').value.trim();
+                    const btn = document.getElementById('newsletterBtn');
+                    const msg = document.getElementById('newsletterMsg');
+                    btn.disabled = true; btn.textContent = '...';
+                    try {
+                        const res = await fetch('{{ route("newsletter.subscribe") }}', {
+                            method: 'POST',
+                            headers: {'Content-Type':'application/json','X-CSRF-TOKEN':'{{ csrf_token() }}','Accept':'application/json'},
+                            body: JSON.stringify({ email })
+                        });
+                        const data = await res.json();
+                        msg.textContent = data.message ?? 'Vérifiez votre boîte mail pour confirmer votre abonnement.';
+                        msg.className = 'text-sm text-green-400';
+                        document.getElementById('newsletterEmail').value = '';
+                    } catch(e) {
+                        msg.textContent = 'Une erreur est survenue, réessayez.';
+                        msg.className = 'text-sm text-red-400';
+                    }
+                    btn.disabled = false; btn.textContent = "S'abonner";
+                });
+                </script>
             </div>
             <div class="lg:col-span-2">
                 <h4 class="font-semibold text-sm uppercase tracking-wider mb-5 text-accent" style="font-family:Outfit,sans-serif">Navigation</h4>
