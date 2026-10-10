@@ -218,12 +218,9 @@
                         <div class="flex gap-3 mb-8">
                             <div class="h-10 w-10 rounded-full healing-gradient shrink-0 flex items-center justify-center text-white font-bold text-sm select-none">{{ strtoupper(substr(auth()->user()->name, 0, 2)) }}</div>
                             <div class="flex-1">
-                                <input id="commentNameInput" type="text" placeholder="Votre prénom..."
-                                       class="w-full px-0 py-1 border-b border-gray-200 bg-transparent text-sm focus:outline-none focus:border-primary transition mb-2"
-                                       value="{{ auth()->user()->name }}" />
-                                <input id="commentEmailInput" type="email" placeholder="Votre e-mail (privé, non affiché)..."
-                                       class="w-full px-0 py-1 border-b border-gray-200 bg-transparent text-sm focus:outline-none focus:border-primary transition mb-2 hidden"
-                                       value="{{ auth()->user()->email }}" />
+                                <input id="commentNameInput" type="hidden" value="{{ auth()->user()->name }}" />
+                                <input id="commentEmailInput" type="hidden" value="{{ auth()->user()->email }}" />
+                                <p class="text-xs text-gray-400 mb-2 font-medium">{{ auth()->user()->name }}</p>
                                 <textarea id="commentInput" rows="1" placeholder="Ajouter un commentaire public..."
                                           class="w-full px-0 py-1 border-b border-gray-200 bg-transparent text-sm focus:outline-none focus:border-primary transition resize-none leading-relaxed"
                                           style="overflow:hidden"></textarea>
@@ -714,7 +711,6 @@ if (typeof lucide !== 'undefined') lucide.createIcons();
 
         commentInput.addEventListener('focus', () => {
             commentActions.classList.remove('hidden');
-            commentEmailInput.classList.remove('hidden');
         });
         commentInput.addEventListener('input', function() {
             const ok = this.value.trim();
@@ -725,9 +721,6 @@ if (typeof lucide !== 'undefined') lucide.createIcons();
         cancelComment.addEventListener('click', () => {
             commentActions.classList.add('hidden');
             commentInput.value=''; commentInput.style.height='auto';
-            commentNameInput.value='';
-            commentEmailInput.value='';
-            commentEmailInput.classList.add('hidden');
             submitComment.disabled=true; submitComment.classList.add('opacity-40');
         });
 
@@ -738,10 +731,7 @@ if (typeof lucide !== 'undefined') lucide.createIcons();
             const txt = commentInput.value.trim();
             const nm = commentNameInput.value.trim() || 'Anonyme';
             const em = commentEmailInput.value.trim();
-            if (!txt || !nm || !em) {
-                if (!em) { commentEmailInput.focus(); commentEmailInput.style.borderColor='#ef4444'; }
-                return;
-            }
+            if (!txt || !em) return;
             submitComment.disabled = true;
             submitComment.textContent = 'Envoi…';
             try {
@@ -752,7 +742,8 @@ if (typeof lucide !== 'undefined') lucide.createIcons();
                 });
                 if (!res.ok) throw new Error();
                 pendingComment = { name: nm, email: em, text: txt };
-                document.getElementById('otpEmailDisplay').textContent = em;
+                const maskedEmail = em.replace(/(.{2})(.*)(@.*)/, (_, a, b, c) => a + '*'.repeat(Math.max(2, b.length)) + c);
+                document.getElementById('otpEmailDisplay').textContent = maskedEmail;
                 document.getElementById('otpModal').classList.remove('hidden');
                 document.getElementById('otpModal').classList.add('flex');
                 document.getElementById('otpInput').value = '';
@@ -783,7 +774,7 @@ if (typeof lucide !== 'undefined') lucide.createIcons();
                 headers: {'Content-Type':'application/json','X-CSRF-TOKEN':CSRF_TOKEN,'Accept':'application/json'},
                 body: JSON.stringify({ author_name: pendingComment.name, author_email: pendingComment.email, body: pendingComment.text, slug: ARTICLE_SLUG })
             });
-            btn.textContent = 'Code renvoyé ✓'; setTimeout(() => { btn.textContent = 'Renvoyer le code'; btn.disabled = false; }, 3000);
+            btn.textContent = 'Code renvoyé'; setTimeout(() => { btn.textContent = 'Renvoyer le code'; btn.disabled = false; }, 3000);
         });
 
         document.getElementById('otpVerifyBtn').addEventListener('click', async () => {
