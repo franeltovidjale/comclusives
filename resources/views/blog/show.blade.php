@@ -695,6 +695,7 @@ if (typeof lucide !== 'undefined') lucide.createIcons();
                     body: JSON.stringify({ email: form.email.value, password: form.password.value })
                 });
                 if (res.ok || res.redirected) {
+                    sessionStorage.clear();
                     window.location.href = window.location.href.split('#')[0] + '#commentaires';
                     window.location.reload();
                     return;
@@ -728,6 +729,7 @@ if (typeof lucide !== 'undefined') lucide.createIcons();
                     btn.disabled = false; btn.textContent = 'Créer mon compte';
                     return;
                 }
+                sessionStorage.clear();
                 window.location.href = window.location.href.split('#')[0] + '#commentaires';
                 window.location.reload();
             } catch(err) {
@@ -851,20 +853,10 @@ if (typeof lucide !== 'undefined') lucide.createIcons();
         const cancelComment = document.getElementById('cancelComment');
         const commentEmailInput = document.getElementById('commentEmailInput');
 
-        if (commentInput) {
-        // Restore pending comment after login/register
-        const restoredComment = sessionStorage.getItem('pendingComment');
-        if (restoredComment) {
-            sessionStorage.removeItem('pendingComment');
-            commentInput.value = restoredComment;
-            commentActions.classList.remove('hidden');
-            submitComment.disabled = false;
-            submitComment.classList.remove('opacity-40');
-            commentInput.style.height = 'auto';
-            commentInput.style.height = Math.min(commentInput.scrollHeight, 120) + 'px';
-            commentInput.focus();
-        }
+        // Nettoyer tout sessionStorage résiduel
+        sessionStorage.removeItem('pendingComment');
 
+        if (commentInput) {
         commentInput.addEventListener('focus', () => {
             commentActions.classList.remove('hidden');
         });
