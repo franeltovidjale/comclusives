@@ -40,6 +40,9 @@ Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () 
     Route::resource('comments', Admin\CommentController::class)->only(['index','update','destroy']);
     Route::patch('comments/{comment}/approve', [Admin\CommentController::class, 'approve'])->name('comments.approve');
 
+    Route::get('subscribers', [Admin\SubscriberController::class, 'index'])->name('subscribers.index');
+    Route::delete('subscribers/{subscriber}', [Admin\SubscriberController::class, 'destroy'])->name('subscribers.destroy');
+
     Route::get('profile', [Admin\ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('profile', [Admin\ProfileController::class, 'update'])->name('profile.update');
     Route::patch('profile/password', [Admin\ProfileController::class, 'updatePassword'])->name('profile.password');

@@ -81,6 +81,14 @@
         <a href="{{ route('admin.articles.index') }}" class="nav-item {{ request()->routeIs('admin.articles*') ? 'active' : '' }}">
             <i data-lucide="file-text"></i> Articles
         </a>
+        <a href="{{ route('admin.subscribers.index') }}" class="nav-item {{ request()->routeIs('admin.subscribers*') ? 'active' : '' }}">
+            <i data-lucide="users"></i>
+            <span>Abonnés</span>
+            @php $subCount = \App\Models\Subscriber::confirmed()->count(); @endphp
+            @if($subCount > 0)
+                <span class="badge-count ml-auto">{{ $subCount }}</span>
+            @endif
+        </a>
         <a href="{{ route('admin.comments.index') }}" class="nav-item {{ request()->routeIs('admin.comments*') ? 'active' : '' }}">
             <i data-lucide="message-square"></i>
             <span>Commentaires</span>

@@ -92,15 +92,12 @@ class ArticleController extends Controller
 
     public function sendNewsletter(Article $article)
     {
-        if ($article->newsletter_sent) {
-            return back()->with('error', 'Newsletter déjà envoyée pour cet article.');
-        }
         $subscribers = Subscriber::confirmed()->get();
         foreach ($subscribers as $sub) {
-            Mail::to($sub->email)->queue(new NewsletterMail($article, $sub));
+            Mail::to($sub->email)->send(new NewsletterMail($article, $sub));
         }
         $article->update(['newsletter_sent' => true]);
-        return back()->with('success', "Newsletter envoyée à {$subscribers->count()} abonnés.");
+        return back()->with('success', "Newsletter envoyée à {$subscribers->count()} abonné(s).");
     }
 
     private function validateArticle(Request $request, ?Article $article = null): array
