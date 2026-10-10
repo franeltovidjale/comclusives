@@ -5,6 +5,26 @@ use App\Http\Controllers\SubscriberController;
 use App\Http\Controllers\Admin;
 use Illuminate\Support\Facades\Route;
 
+// ─── REDIRECTIONS anciennes URLs WordPress ────────────
+Route::get('/accueil', fn() => redirect('/', 301));
+Route::get('/learn-french/', fn() => redirect('/learn-french', 301));
+
+// Anciennes URLs WordPress → 410 Gone (déindexation rapide par Google)
+Route::get('/comments/feed', fn() => response('Gone', 410));
+Route::get('/comments/feed/', fn() => response('Gone', 410));
+Route::get('{slug}/feed', fn() => response('Gone', 410))->where('slug', '.*');
+Route::get('{slug}/feed/', fn() => response('Gone', 410))->where('slug', '.*');
+Route::get('/tag/{any}', fn() => redirect('/blog', 301))->where('any', '.*');
+Route::get('/category/{any}', fn() => redirect('/blog', 301))->where('any', '.*');
+Route::get('/{year}/{month}/{day}', fn() => redirect('/blog', 301))->where(['year'=>'\d{4}','month'=>'\d{2}','day'=>'\d{2}']);
+Route::get('/{year}/{month}', fn() => redirect('/blog', 301))->where(['year'=>'\d{4}','month'=>'\d{2}']);
+Route::get('/{year}/{month}/{day}/', fn() => redirect('/blog', 301))->where(['year'=>'\d{4}','month'=>'\d{2}','day'=>'\d{2}']);
+// Anciens slugs WP sans /blog/ préfixe → tente redirection vers /blog/{slug}
+Route::get('/{slug}/', function($slug) {
+    $article = \App\Models\Article::where('slug', $slug)->where('status', 'published')->first();
+    return $article ? redirect('/blog/' . $slug, 301) : response('Gone', 410);
+})->where('slug', '[a-z0-9\-]+');
+
 // ─── FRONT ───────────────────────────────────────────
 Route::get('/offline', fn() => view('offline'))->name('offline');
 Route::get('/', [ArticleController::class, 'home'])->name('home');

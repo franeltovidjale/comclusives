@@ -20,9 +20,12 @@
     "@@type": "Article",
     "headline": "{{ addslashes($article->title) }}",
     "description": "{{ addslashes(Str::limit(strip_tags(html_entity_decode($article->excerpt ?? '')), 155)) }}",
-    "image": "{{ $article->cover_url ?? asset('images/og-image.jpg') }}",
-    "datePublished": "{{ $article->published_at?->toIso8601String() }}",
-    "dateModified": "{{ $article->updated_at?->toIso8601String() }}",
+    "image": {
+        "@@type": "ImageObject",
+        "url": "{{ $article->cover_url ?? asset('images/og-image.jpg') }}"
+    },
+    "datePublished": "{{ $article->published_at?->toIso8601String() ?? $article->created_at->toIso8601String() }}",
+    "dateModified": "{{ $article->updated_at->toIso8601String() }}",
     "author": {
         "@@type": "Person",
         "name": "{{ $article->author?->name ?? 'Comclusives' }}"
