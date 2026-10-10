@@ -170,14 +170,13 @@
     }
 </script>
 {{-- Confirm Modal --}}
-<div id="confirmModal" class="fixed inset-0 z-50 hidden items-center justify-center">
-    <div class="absolute inset-0 bg-black/40" onclick="closeConfirm()"></div>
-    <div class="relative bg-white rounded-2xl shadow-2xl p-6 w-full max-w-sm mx-4">
-        <h3 class="font-bold text-gray-900 text-base mb-2" id="confirmTitle">Confirmer la suppression</h3>
-        <p class="text-sm text-gray-500 mb-6" id="confirmText">Cette action est irréversible.</p>
-        <div class="flex gap-3 justify-end">
-            <button onclick="closeConfirm()" class="px-4 py-2 rounded-xl text-sm font-semibold bg-gray-100 text-gray-600 hover:bg-gray-200 transition">Annuler</button>
-            <button id="confirmOkBtn" class="px-4 py-2 rounded-xl text-sm font-semibold bg-red-500 text-white hover:bg-red-600 transition">Supprimer</button>
+<div id="confirmModal" style="display:none;position:fixed;inset:0;z-index:9999;align-items:center;justify-content:center;background:rgba(0,0,0,0.45);">
+    <div style="position:relative;background:#fff;border-radius:16px;box-shadow:0 20px 60px rgba(0,0,0,0.15);padding:24px;width:100%;max-width:360px;margin:0 16px;">
+        <h3 style="font-weight:700;color:#111827;font-size:15px;margin:0 0 8px" id="confirmTitle">Confirmer la suppression</h3>
+        <p style="font-size:13px;color:#6b7280;margin:0 0 24px" id="confirmText">Cette action est irreversible.</p>
+        <div style="display:flex;gap:12px;justify-content:flex-end;">
+            <button onclick="closeConfirm()" style="padding:8px 16px;border-radius:10px;font-size:13px;font-weight:600;background:#f3f4f6;color:#374151;border:none;cursor:pointer;">Annuler</button>
+            <button id="confirmOkBtn" style="padding:8px 16px;border-radius:10px;font-size:13px;font-weight:600;background:#ef4444;color:#fff;border:none;cursor:pointer;">Supprimer</button>
         </div>
     </div>
 </div>
@@ -187,13 +186,11 @@ function showConfirm(title, text, cb) {
     _confirmCb = cb;
     document.getElementById('confirmTitle').textContent = title;
     document.getElementById('confirmText').textContent = text;
-    const modal = document.getElementById('confirmModal');
-    modal.classList.remove('hidden'); modal.classList.add('flex');
+    document.getElementById('confirmModal').style.display = 'flex';
     document.getElementById('confirmOkBtn').onclick = () => { closeConfirm(); cb(); };
 }
 function closeConfirm() {
-    const modal = document.getElementById('confirmModal');
-    modal.classList.add('hidden'); modal.classList.remove('flex');
+    document.getElementById('confirmModal').style.display = 'none';
     _confirmCb = null;
 }
 </script>
