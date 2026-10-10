@@ -126,13 +126,13 @@
 @section('content')
 
 {{-- ══ HERO ══ --}}
-<div class="relative min-h-[70vh] flex items-end pb-16 overflow-hidden mt-20"
+<div class="relative min-h-[55vh] sm:min-h-[70vh] flex items-end pb-16 overflow-hidden mt-20"
      style="background:{{ $article->cover_url ? 'none' : 'linear-gradient(135deg,#0a6b63,#1f2937)' }}">
 
     @if($article->cover_url)
     <div class="absolute inset-0">
         <img src="{{ $article->cover_url }}" alt=""
-             class="w-full h-full object-cover" loading="eager">
+             class="w-full h-full object-cover object-center" loading="eager">
         <div class="absolute inset-0" style="background:linear-gradient(to top, rgba(0,0,0,.85) 0%, rgba(0,0,0,.45) 50%, rgba(0,0,0,.25) 100%)"></div>
     </div>
     @else
