@@ -89,7 +89,7 @@
     @include('components.header')
     <main>@yield('content')</main>
     @include('components.footer')
-    <a href="https://wa.me/22901970047" target="_blank" rel="noopener"
+    <a href="https://wa.me/22997004726" target="_blank" rel="noopener"
        aria-label="Nous contacter sur WhatsApp"
        class="fixed bottom-6 left-6 z-40 h-12 w-12 rounded-full flex items-center justify-center text-white shadow-soft hover:scale-110 transition {{ request()->routeIs('blog.show') ? 'hidden' : '' }}"
        style="background:#0a6b63" title="WhatsApp">
