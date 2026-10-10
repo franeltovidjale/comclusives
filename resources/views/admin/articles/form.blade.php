@@ -129,7 +129,7 @@
             {{-- Catégories --}}
             <div class="bg-white rounded-2xl border border-gray-100 p-5">
                 <h3 class="font-bold text-sm mb-3" style="font-family:Outfit,sans-serif">Catégories</h3>
-                <div class="space-y-2">
+                <div class="space-y-2" id="categoryList">
                     @foreach($categories as $cat)
                     <label class="flex items-center gap-3 p-2.5 rounded-xl hover:bg-gray-50 cursor-pointer transition">
                         <input type="checkbox" name="categories[]" value="{{ $cat->id }}" class="rounded"
@@ -139,13 +139,17 @@
                     </label>
                     @endforeach
                 </div>
-                <button type="button" onclick="document.getElementById('newCatForm').classList.toggle('hidden')"
+                <button type="button" onclick="const f=document.getElementById('newCatForm');f.style.display=f.style.display==='flex'?'none':'flex'"
                         class="mt-3 text-xs text-primary font-semibold hover:underline flex items-center gap-1">
                     <i data-lucide="plus" class="h-3 w-3"></i> Nouvelle catégorie
                 </button>
-                <div id="newCatForm" class="hidden mt-3 flex gap-2">
-                    <input type="text" name="new_category" placeholder="Nom catégorie"
-                           class="flex-1 px-3 py-2 rounded-xl border border-gray-200 text-xs focus:outline-none focus:border-primary transition">
+                <div id="newCatForm" style="display:none;margin-top:12px;gap:8px;align-items:center;flex-wrap:wrap">
+                    <input id="newCatName" type="text" placeholder="Nom de la catégorie"
+                           class="flex-1 px-3 py-2 rounded-xl border border-gray-200 text-xs focus:outline-none focus:border-primary transition" style="min-width:120px">
+                    <input id="newCatColor" type="color" value="#0a6b63"
+                           style="height:34px;width:40px;border-radius:8px;border:1px solid #e5e7eb;cursor:pointer;padding:2px">
+                    <button type="button" onclick="createCategory()" id="newCatBtn"
+                            class="px-3 py-2 rounded-xl text-xs font-semibold text-white healing-gradient">Ajouter</button>
                 </div>
             </div>
 
@@ -181,6 +185,31 @@ document.getElementById('articleForm').addEventListener('submit', function(e) {
         btn.disabled = true;
     }
 });
+
+async function createCategory() {
+    const name = document.getElementById('newCatName').value.trim();
+    const color = document.getElementById('newCatColor').value;
+    if (!name) return;
+    const btn = document.getElementById('newCatBtn');
+    btn.disabled = true; btn.textContent = '...';
+    try {
+        const res = await fetch('{{ route("admin.categories.store") }}', {
+            method: 'POST',
+            headers: {'Content-Type':'application/json','X-CSRF-TOKEN':'{{ csrf_token() }}','Accept':'application/json'},
+            body: JSON.stringify({ name, color })
+        });
+        if (!res.ok) { const d = await res.json(); alert(d.message || 'Erreur'); btn.disabled=false; btn.textContent='Ajouter'; return; }
+        const cat = await res.json();
+        const list = document.getElementById('categoryList');
+        const div = document.createElement('label');
+        div.className = 'flex items-center gap-2 p-2 rounded-xl hover:bg-soft cursor-pointer transition';
+        div.innerHTML = `<input type="checkbox" name="categories[]" value="${cat.id}" checked class="rounded text-primary w-4 h-4"><span class="text-sm flex-1">${cat.name}</span><span class="h-2.5 w-2.5 rounded-full shrink-0" style="background:${cat.color}"></span>`;
+        list.appendChild(div);
+        document.getElementById('newCatName').value = '';
+        document.getElementById('newCatForm').style.display = 'none';
+    } catch(e) { alert('Erreur réseau'); }
+    btn.disabled = false; btn.textContent = 'Ajouter';
+}
 </script>
 @endsection
 

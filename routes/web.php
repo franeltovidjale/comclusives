@@ -43,6 +43,10 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::resource('comments', Admin\CommentController::class)->only(['index','update','destroy']);
     Route::patch('comments/{comment}/approve', [Admin\CommentController::class, 'approve'])->name('comments.approve');
 
+    Route::get('categories', [Admin\CategoryController::class, 'index'])->name('categories.index');
+    Route::post('categories', [Admin\CategoryController::class, 'store'])->name('categories.store');
+    Route::delete('categories/{category}', [Admin\CategoryController::class, 'destroy'])->name('categories.destroy');
+
     Route::get('subscribers', [Admin\SubscriberController::class, 'index'])->name('subscribers.index');
     Route::delete('subscribers/{subscriber}', [Admin\SubscriberController::class, 'destroy'])->name('subscribers.destroy');
 

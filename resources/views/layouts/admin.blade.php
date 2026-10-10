@@ -89,6 +89,10 @@
                 <span class="badge-count ml-auto">{{ $subCount }}</span>
             @endif
         </a>
+        <a href="{{ route('admin.categories.index') }}" class="nav-item {{ request()->routeIs('admin.categories*') ? 'active' : '' }}">
+            <i data-lucide="tag"></i>
+            <span>Catégories</span>
+        </a>
         <a href="{{ route('admin.comments.index') }}" class="nav-item {{ request()->routeIs('admin.comments*') ? 'active' : '' }}">
             <i data-lucide="message-square"></i>
             <span>Commentaires</span>
