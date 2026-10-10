@@ -20,7 +20,9 @@ Route::get('/{year}/{month}/{day}', fn() => redirect('/blog', 301))->where(['yea
 Route::get('/{year}/{month}', fn() => redirect('/blog', 301))->where(['year'=>'\d{4}','month'=>'\d{2}']);
 Route::get('/{year}/{month}/{day}/', fn() => redirect('/blog', 301))->where(['year'=>'\d{4}','month'=>'\d{2}','day'=>'\d{2}']);
 // Anciens slugs WP sans /blog/ préfixe → tente redirection vers /blog/{slug}
-Route::get('/{slug}/', function($slug) {
+$reserved = ['blog', 'contact', 'a-propos', 'learn-french', 'tamtal', 'confidentialite', 'mentions-legales', 'conditions-utilisation', 'admin', 'offline', 'sitemap.xml', 'newsletter'];
+Route::get('/{slug}/', function($slug) use ($reserved) {
+    if (in_array($slug, $reserved)) return redirect('/'.$slug, 301);
     $article = \App\Models\Article::where('slug', $slug)->where('status', 'published')->first();
     return $article ? redirect('/blog/' . $slug, 301) : response('Gone', 410);
 })->where('slug', '[a-z0-9\-]+');
