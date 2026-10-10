@@ -70,7 +70,7 @@
       <tr><td style="background:#0f1923;border-radius:0 0 16px 16px;padding:28px 40px;text-align:center;">
         <p style="margin:0 0 8px;font-size:13px;color:#9ca3af;">
           © 2025 Comclusives ·
-          <a href="https://comclusives.com" style="color:#4ade80;text-decoration:none;">comclusives.com</a>
+          <a href="https://comclusives.com" style="color:#0d9488;text-decoration:none;">comclusives.com</a>
         </p>
         <p style="margin:0 0 12px;font-size:12px;color:#6b7280;">
           Vous recevez cet email car vous êtes abonné à la newsletter Comclusives.
