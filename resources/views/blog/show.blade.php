@@ -994,7 +994,21 @@ if (typeof lucide !== 'undefined') lucide.createIcons();
         const rawUrl = window.location.href;
         function openShareModal() { shareModal.classList.remove('hidden'); shareModal.classList.add('flex'); document.body.style.overflow='hidden'; }
         function closeShareModal() { shareModal.classList.add('hidden'); shareModal.classList.remove('flex'); document.body.style.overflow=''; }
-        shareBtn.addEventListener('click', openShareModal);
+        shareBtn.addEventListener('click', async () => {
+            if (navigator.share) {
+                try {
+                    await navigator.share({
+                        title: '{{ addslashes($article->title) }}',
+                        text: '{{ addslashes(Str::limit(strip_tags($article->excerpt ?? ''), 100)) }}',
+                        url: window.location.href
+                    });
+                    return;
+                } catch(e) {
+                    if (e.name === 'AbortError') return; // user cancelled
+                }
+            }
+            openShareModal();
+        });
         closeShare.addEventListener('click', closeShareModal);
         shareOverlay.addEventListener('click', closeShareModal);
         const mCopyLink = document.getElementById('mCopyLink');
