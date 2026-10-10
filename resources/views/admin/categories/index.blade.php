@@ -39,7 +39,8 @@
                 <span class="font-medium text-sm">{{ $cat->name }}</span>
                 <span class="text-xs text-gray-400">{{ $cat->articles_count }} article{{ $cat->articles_count > 1 ? 's' : '' }}</span>
             </div>
-            <form method="POST" action="{{ route('admin.categories.destroy', $cat) }}" onsubmit="return showConfirm('Supprimer cette catégorie ?', 'Les articles associés ne seront pas supprimés.', () => this.submit())">
+            <form method="POST" action="{{ route('admin.categories.destroy', $cat) }}"
+                  onsubmit="event.preventDefault(); confirmDelete(this, '{{ addslashes($cat->name) }}')">
                 @csrf @method('DELETE')
                 <button type="submit" class="text-xs text-red-400 hover:text-red-600 opacity-0 group-hover:opacity-100 transition">Supprimer</button>
             </form>
@@ -50,3 +51,38 @@
     </div>
 </div>
 @endsection
+
+@push('scripts')
+<div id="deleteCatModal" style="display:none;position:fixed;inset:0;z-index:9999;align-items:center;justify-content:center;background:rgba(0,0,0,0.4)">
+    <div style="background:#fff;border-radius:1.25rem;padding:2rem;max-width:380px;width:90%;text-align:center;box-shadow:0 20px 60px rgba(0,0,0,0.2)">
+        <div style="width:48px;height:48px;background:#fef2f2;border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 1rem">
+            <svg width="22" height="22" fill="none" stroke="#ef4444" stroke-width="2" viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4h6v2"/></svg>
+        </div>
+        <h3 style="font-weight:700;font-size:1.1rem;margin-bottom:.5rem" id="deleteCatTitle">Supprimer la catégorie ?</h3>
+        <p style="color:#6b7280;font-size:.875rem;margin-bottom:1.5rem">Les articles associés ne seront <strong>pas supprimés</strong>, leur catégorie sera simplement retirée.</p>
+        <div style="display:flex;gap:.75rem;justify-content:center">
+            <button onclick="closeCatModal()" style="padding:.6rem 1.4rem;border-radius:9999px;border:1px solid #e5e7eb;background:#fff;font-size:.875rem;cursor:pointer">Annuler</button>
+            <button id="deleteCatConfirmBtn" style="padding:.6rem 1.4rem;border-radius:9999px;border:none;background:#ef4444;color:#fff;font-size:.875rem;font-weight:600;cursor:pointer">Supprimer</button>
+        </div>
+    </div>
+</div>
+<script>
+var _pendingDeleteForm = null;
+function confirmDelete(form, name) {
+    _pendingDeleteForm = form;
+    document.getElementById('deleteCatTitle').textContent = 'Supprimer "' + name + '" ?';
+    var modal = document.getElementById('deleteCatModal');
+    modal.style.display = 'flex';
+}
+function closeCatModal() {
+    document.getElementById('deleteCatModal').style.display = 'none';
+    _pendingDeleteForm = null;
+}
+document.getElementById('deleteCatConfirmBtn').addEventListener('click', function() {
+    if (_pendingDeleteForm) _pendingDeleteForm.submit();
+});
+document.getElementById('deleteCatModal').addEventListener('click', function(e) {
+    if (e.target === this) closeCatModal();
+});
+</script>
+@endpush
