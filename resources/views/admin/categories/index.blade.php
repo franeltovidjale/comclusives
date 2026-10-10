@@ -153,7 +153,7 @@ document.getElementById('editCatSaveBtn').addEventListener('click', async functi
     if (!name) { errEl.textContent = 'Le nom est requis.'; errEl.style.display = 'block'; return; }
     btn.textContent = '…';
     btn.disabled = true;
-    var token = document.querySelector('meta[name="csrf-token"]').content;
+    var token = document.querySelector('meta[name="csrf-token"]')?.content || '{{ csrf_token() }}';
     try {
         var fd = new FormData();
         fd.append('_token', token);
