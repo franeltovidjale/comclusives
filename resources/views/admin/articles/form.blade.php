@@ -97,7 +97,7 @@
                         </svg>
                         <span id="btnLabel">{{ isset($article) ? 'Mettre à jour' : 'Publier' }}</span>
                     </button>
-                    <button type="submit" name="action" value="draft"
+                    <button type="button" onclick="document.querySelector('select[name=status]').value='draft';document.getElementById('articleForm').submit();"
                             class="px-4 py-2.5 rounded-xl border border-gray-200 text-sm font-medium text-gray-600 hover:bg-gray-50 transition">
                         Brouillon
                     </button>
