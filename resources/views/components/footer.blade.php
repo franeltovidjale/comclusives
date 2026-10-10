@@ -13,7 +13,7 @@
                     <input type="email" id="newsletterEmail" required placeholder="Votre adresse e-mail" class="flex-1 w-full px-4 py-3 rounded-full bg-white/10 border border-white/15 placeholder-white/50 text-sm focus:outline-none focus:border-primary transition">
                     <button type="submit" id="newsletterBtn" class="btn-primary text-sm px-5 whitespace-nowrap">S'abonner</button>
                 </form>
-                <p id="newsletterMsg" class="text-sm hidden"></p>
+                <p id="newsletterMsg" class="text-sm hidden text-center" style="color:#0d9488"></p>
                 <script>
                 document.getElementById('newsletterForm').addEventListener('submit', async function(e) {
                     e.preventDefault();
@@ -29,7 +29,7 @@
                         });
                         const data = await res.json();
                         msg.textContent = data.message ?? 'Vérifiez votre boîte mail pour confirmer votre abonnement.';
-                        msg.className = 'text-sm text-green-400';
+                        msg.className = 'text-sm text-center';
                         document.getElementById('newsletterEmail').value = '';
                     } catch(e) {
                         msg.textContent = 'Une erreur est survenue, réessayez.';
