@@ -21,6 +21,7 @@ Route::get('/newsletter/confirm/{token}', [SubscriberController::class, 'confirm
 Route::get('/newsletter/unsubscribe/{token}', [SubscriberController::class, 'unsubscribe'])->name('newsletter.unsubscribe');
 
 // Commentaires
+Route::post('/comments/send-otp', [CommentController::class, 'sendOtp'])->name('comments.send-otp');
 Route::post('/blog/{slug}/comments', [CommentController::class, 'store'])->name('comments.store');
 Route::post('/comments/{comment}/like', [CommentController::class, 'like'])->name('comments.like');
 

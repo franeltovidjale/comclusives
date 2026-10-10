@@ -48,6 +48,10 @@
     <div class="border-t border-white/10 bg-black/20">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 flex flex-col md:flex-row items-center justify-between gap-4 text-sm text-secondary-foreground/50">
             <p>© <span id="yr"></span> Comclusives – Tous droits réservés.</p>
+            <a href="{{ route('admin.login') }}" class="text-secondary-foreground/30 hover:text-secondary-foreground/60 transition text-xs flex items-center gap-1">
+                <svg class="h-3 w-3" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
+                Admin
+            </a>
         </div>
     </div>
 </footer>

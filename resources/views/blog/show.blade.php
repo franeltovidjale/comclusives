@@ -219,6 +219,8 @@
                             <div class="flex-1">
                                 <input id="commentNameInput" type="text" placeholder="Votre prénom..."
                                        class="w-full px-0 py-1 border-b border-gray-200 bg-transparent text-sm focus:outline-none focus:border-primary transition mb-2" />
+                                <input id="commentEmailInput" type="email" placeholder="Votre e-mail (privé, non affiché)..."
+                                       class="w-full px-0 py-1 border-b border-gray-200 bg-transparent text-sm focus:outline-none focus:border-primary transition mb-2 hidden" />
                                 <textarea id="commentInput" rows="1" placeholder="Ajouter un commentaire public..."
                                           class="w-full px-0 py-1 border-b border-gray-200 bg-transparent text-sm focus:outline-none focus:border-primary transition resize-none leading-relaxed"
                                           style="overflow:hidden"></textarea>
@@ -395,6 +397,26 @@
     Partager
 </button>
 
+{{-- OTP Modal --}}
+<div id="otpModal" class="fixed inset-0 z-50 hidden items-center justify-center">
+    <div id="otpOverlay" class="absolute inset-0 bg-black/50" style="backdrop-filter:blur(4px)"></div>
+    <div class="relative w-full max-w-sm mx-4 bg-white rounded-3xl shadow-2xl p-8">
+        <div class="text-center mb-6">
+            <div class="text-4xl mb-3">💬</div>
+            <h3 class="font-bold text-xl text-gray-900 mb-1">Vérifiez votre e-mail</h3>
+            <p class="text-sm text-gray-500">Un code à 6 chiffres a été envoyé à <strong id="otpEmailDisplay"></strong>. Valable 10 minutes.</p>
+        </div>
+        <div class="flex gap-2 justify-center mb-4">
+            <input id="otpInput" type="text" inputmode="numeric" maxlength="6" placeholder="000000"
+                   class="w-40 text-center text-3xl font-mono tracking-widest px-3 py-3 border-2 border-gray-200 rounded-2xl focus:outline-none focus:border-primary transition">
+        </div>
+        <p id="otpError" class="text-center text-sm text-red-500 mb-4 hidden"></p>
+        <button id="otpVerifyBtn" class="w-full px-4 py-3 rounded-full text-sm font-semibold text-white healing-gradient transition">Valider le commentaire</button>
+        <button id="otpResendBtn" class="w-full mt-2 px-4 py-3 rounded-full text-sm font-semibold text-gray-400 hover:bg-gray-50 transition">Renvoyer le code</button>
+        <button id="otpCancelBtn" class="w-full mt-1 text-xs text-gray-300 hover:text-gray-500 transition py-2">Annuler</button>
+    </div>
+</div>
+
 {{-- Share Modal --}}
 <div id="shareModal" class="fixed inset-0 z-50 hidden items-end sm:items-center justify-center">
     <div id="shareOverlay" class="absolute inset-0 bg-black/50" style="backdrop-filter:blur(4px)"></div>
@@ -450,7 +472,9 @@
 @push('scripts')
 <script>
 const ARTICLE_TITLE = '{{ addslashes($article->title) }}';
-const COMMENT_URL = '{{ route("comments.store", $article->id) }}';
+const COMMENT_URL = '{{ route("comments.store", $article->slug) }}';
+const OTP_URL = '{{ route("comments.send-otp") }}';
+const ARTICLE_SLUG = '{{ $article->slug }}';
 const CSRF_TOKEN = '{{ csrf_token() }}';
 
 if (typeof lucide !== 'undefined') lucide.createIcons();
@@ -604,7 +628,12 @@ if (typeof lucide !== 'undefined') lucide.createIcons();
         const submitComment = document.getElementById('submitComment');
         const cancelComment = document.getElementById('cancelComment');
 
-        commentInput.addEventListener('focus', () => commentActions.classList.remove('hidden'));
+        const commentEmailInput = document.getElementById('commentEmailInput');
+
+        commentInput.addEventListener('focus', () => {
+            commentActions.classList.remove('hidden');
+            commentEmailInput.classList.remove('hidden');
+        });
         commentInput.addEventListener('input', function() {
             const ok = this.value.trim();
             submitComment.disabled = !ok;
@@ -615,27 +644,100 @@ if (typeof lucide !== 'undefined') lucide.createIcons();
             commentActions.classList.add('hidden');
             commentInput.value=''; commentInput.style.height='auto';
             commentNameInput.value='';
+            commentEmailInput.value='';
+            commentEmailInput.classList.add('hidden');
             submitComment.disabled=true; submitComment.classList.add('opacity-40');
         });
+
+        // OTP state
+        let pendingComment = null;
+
         submitComment.addEventListener('click', async () => {
             const txt = commentInput.value.trim();
             const nm = commentNameInput.value.trim() || 'Anonyme';
-            if (!txt || !nm) return;
+            const em = commentEmailInput.value.trim();
+            if (!txt || !nm || !em) {
+                if (!em) { commentEmailInput.focus(); commentEmailInput.style.borderColor='#ef4444'; }
+                return;
+            }
             submitComment.disabled = true;
+            submitComment.textContent = 'Envoi…';
             try {
-                await fetch(COMMENT_URL, {
+                const res = await fetch(OTP_URL, {
                     method: 'POST',
                     headers: {'Content-Type':'application/json','X-CSRF-TOKEN':CSRF_TOKEN,'Accept':'application/json'},
-                    body: JSON.stringify({ author_name: nm, author_email: 'anonymous@comclusives.com', body: txt })
+                    body: JSON.stringify({ author_name: nm, author_email: em, body: txt, slug: ARTICLE_SLUG })
                 });
-            } catch(e) {}
-            // Afficher en attente de modération
-            const el = buildComment({ name:nm, text:txt, date:"à l'instant (en attente de modération)", likes:0 });
-            commentsList.prepend(el);
-            totalComments++;
-            document.getElementById('commentCount').textContent = totalComments + ' commentaires';
-            cancelComment.click();
-            el.scrollIntoView({ behavior:'smooth', block:'start' });
+                if (!res.ok) throw new Error();
+                pendingComment = { name: nm, email: em, text: txt };
+                document.getElementById('otpEmailDisplay').textContent = em;
+                document.getElementById('otpModal').classList.remove('hidden');
+                document.getElementById('otpModal').classList.add('flex');
+                document.getElementById('otpInput').value = '';
+                document.getElementById('otpError').classList.add('hidden');
+                document.getElementById('otpInput').focus();
+            } catch(e) {
+                submitComment.textContent = 'Commenter';
+                submitComment.disabled = false;
+            }
+        });
+
+        // OTP modal
+        function closeOtpModal() {
+            document.getElementById('otpModal').classList.add('hidden');
+            document.getElementById('otpModal').classList.remove('flex');
+            submitComment.textContent = 'Commenter';
+            submitComment.disabled = false;
+        }
+        document.getElementById('otpCancelBtn').addEventListener('click', closeOtpModal);
+        document.getElementById('otpOverlay').addEventListener('click', closeOtpModal);
+
+        document.getElementById('otpResendBtn').addEventListener('click', async () => {
+            if (!pendingComment) return;
+            const btn = document.getElementById('otpResendBtn');
+            btn.textContent = 'Envoi…'; btn.disabled = true;
+            await fetch(OTP_URL, {
+                method: 'POST',
+                headers: {'Content-Type':'application/json','X-CSRF-TOKEN':CSRF_TOKEN,'Accept':'application/json'},
+                body: JSON.stringify({ author_name: pendingComment.name, author_email: pendingComment.email, body: pendingComment.text, slug: ARTICLE_SLUG })
+            });
+            btn.textContent = 'Code renvoyé ✓'; setTimeout(() => { btn.textContent = 'Renvoyer le code'; btn.disabled = false; }, 3000);
+        });
+
+        document.getElementById('otpVerifyBtn').addEventListener('click', async () => {
+            const code = document.getElementById('otpInput').value.trim();
+            if (code.length !== 6) return;
+            const btn = document.getElementById('otpVerifyBtn');
+            btn.textContent = 'Vérification…'; btn.disabled = true;
+            try {
+                const res = await fetch(COMMENT_URL, {
+                    method: 'POST',
+                    headers: {'Content-Type':'application/json','X-CSRF-TOKEN':CSRF_TOKEN,'Accept':'application/json'},
+                    body: JSON.stringify({ author_name: pendingComment.name, author_email: pendingComment.email, body: pendingComment.text, otp: code })
+                });
+                if (!res.ok) {
+                    const data = await res.json();
+                    const err = document.getElementById('otpError');
+                    err.textContent = data.error || 'Code incorrect.';
+                    err.classList.remove('hidden');
+                    btn.textContent = 'Valider le commentaire'; btn.disabled = false;
+                    return;
+                }
+                closeOtpModal();
+                const el = buildComment({ name: pendingComment.name, text: pendingComment.text, date: "à l'instant (en attente de modération)", likes: 0 });
+                commentsList.prepend(el);
+                totalComments++;
+                document.getElementById('commentCount').textContent = totalComments + ' commentaires';
+                cancelComment.click();
+                el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                pendingComment = null;
+            } catch(e) {
+                btn.textContent = 'Valider le commentaire'; btn.disabled = false;
+            }
+        });
+
+        document.getElementById('otpInput').addEventListener('keydown', function(e) {
+            if (e.key === 'Enter') document.getElementById('otpVerifyBtn').click();
         });
 
         // === MODAL PARTAGE ===
