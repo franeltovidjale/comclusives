@@ -82,10 +82,12 @@ class CommentController extends Controller
     {
         $key = 'liked_'.$comment->id.'_'.md5(request()->ip());
         if (Cache::has($key)) {
-            return response()->json(['likes' => $comment->likes, 'already' => true]);
+            Cache::forget($key);
+            $comment->decrement('likes');
+            return response()->json(['likes' => max(0, $comment->likes), 'liked' => false]);
         }
         Cache::put($key, true, now()->addDays(1));
         $comment->increment('likes');
-        return response()->json(['likes' => $comment->likes, 'already' => false]);
+        return response()->json(['likes' => $comment->likes, 'liked' => true]);
     }
 }

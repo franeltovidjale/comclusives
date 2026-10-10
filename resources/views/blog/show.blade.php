@@ -562,7 +562,6 @@ if (typeof lucide !== 'undefined') lucide.createIcons();
 
             // Like toggle
             likeBtn.addEventListener('click', async function() {
-                if (this.dataset.liked === 'true') return;
                 if (!commentId) return;
                 try {
                     const res = await fetch(`/comments/${commentId}/like`, {
@@ -570,16 +569,18 @@ if (typeof lucide !== 'undefined') lucide.createIcons();
                         headers: { 'X-CSRF-TOKEN': CSRF_TOKEN, 'Accept': 'application/json' }
                     });
                     const json = await res.json();
-                    if (json.already) {
+                    this.querySelector('.like-count').textContent = json.likes || '';
+                    if (json.liked) {
                         localStorage.setItem('liked_' + commentId, '1');
                         setLiked(this);
-                        this.querySelector('.like-count').textContent = json.likes || '';
-                        return;
+                    } else {
+                        localStorage.removeItem('liked_' + commentId);
+                        this.dataset.liked = 'false';
+                        const icon = this.querySelector('.like-icon');
+                        icon.style.fill = 'none';
+                        icon.style.stroke = 'currentColor';
+                        this.classList.remove('text-primary');
                     }
-                    localStorage.setItem('liked_' + commentId, '1');
-                    setLiked(this);
-                    this.dataset.count = json.likes;
-                    this.querySelector('.like-count').textContent = json.likes || '';
                 } catch(e) {}
             });
 
