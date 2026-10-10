@@ -27,9 +27,9 @@
         <tbody class="divide-y divide-gray-50">
         @foreach($articles as $a)
         <tr class="hover:bg-gray-50/50 article-row">
-            <td class="px-5 py-3 font-medium">
-                <p class="truncate max-w-[180px] sm:max-w-xs">{{ $a->title }}</p>
-                <p class="text-xs text-gray-400 truncate max-w-[180px] sm:max-w-xs">{{ $a->slug }}</p>
+            <td class="px-5 py-3 font-medium" style="max-width:0;width:100%">
+                <p class="truncate">{{ $a->title }}</p>
+                <p class="text-xs text-gray-400 truncate">{{ $a->slug }}</p>
                 {{-- Mobile: show status badge inline --}}
                 <span class="sm:hidden mt-1 inline-block text-xs px-2 py-0.5 rounded-full font-semibold {{ $a->status==='published' ? 'bg-green-100 text-green-700' : 'bg-yellow-100 text-yellow-700' }}">
                     {{ $a->status==='published' ? 'Publié' : 'Brouillon' }}
