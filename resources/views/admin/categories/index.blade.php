@@ -155,10 +155,15 @@ document.getElementById('editCatSaveBtn').addEventListener('click', async functi
     btn.disabled = true;
     var token = document.querySelector('meta[name="csrf-token"]').content;
     try {
+        var fd = new FormData();
+        fd.append('_token', token);
+        fd.append('_method', 'PATCH');
+        fd.append('name', name);
+        fd.append('color', color);
         var res = await fetch('/admin/categories/' + _editCatId, {
             method: 'POST',
-            headers: {'Content-Type':'application/json','X-CSRF-TOKEN':token,'X-HTTP-Method-Override':'PATCH','Accept':'application/json'},
-            body: JSON.stringify({name, color, _method:'PATCH'})
+            headers: {'X-CSRF-TOKEN':token,'Accept':'application/json'},
+            body: fd
         });
         var data = await res.json();
         if (!res.ok) {
