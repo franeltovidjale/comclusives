@@ -57,17 +57,11 @@
                             </button>
                         </form>
                     @else
-                        @if(!$a->newsletter_sent)
                         <form method="POST" action="{{ route('admin.articles.newsletter',$a) }}">@csrf
-                            <button title="Envoyer newsletter" class="h-8 w-8 rounded-lg bg-green-50 text-green-600 hover:bg-green-100 flex items-center justify-center transition">
+                            <button title="{{ $a->newsletter_sent ? 'Renvoyer la newsletter' : 'Envoyer newsletter' }}" class="h-8 w-8 rounded-lg bg-green-50 text-green-600 hover:bg-green-100 flex items-center justify-center transition">
                                 <i data-lucide="send" class="h-4 w-4"></i>
                             </button>
                         </form>
-                        @else
-                        <span title="Newsletter envoyée" class="h-8 w-8 rounded-lg bg-gray-50 text-gray-300 flex items-center justify-center">
-                            <i data-lucide="send" class="h-4 w-4"></i>
-                        </span>
-                        @endif
                         <form method="POST" action="{{ route('admin.articles.unpublish',$a) }}">@csrf @method('PATCH')
                             <button title="Dépublier" class="h-8 w-8 rounded-lg bg-green-50 text-green-600 hover:bg-green-100 flex items-center justify-center transition">
                                 <i data-lucide="eye-off" class="h-4 w-4"></i>
