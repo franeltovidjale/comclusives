@@ -68,7 +68,7 @@
     </div>
     <div class="border-t border-white/10 bg-black/20">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 pb-20 md:pb-6 flex flex-col md:flex-row items-center justify-between gap-3 text-sm text-secondary-foreground/50">
-            <p class="text-center md:text-left">© <span id="yr"></span> Comclusives – Tous droits réservés.</p>
+            <p class="text-center md:text-left">© 2025 Comclusives – Tous droits réservés.</p>
             <div class="flex flex-wrap justify-center gap-4 text-xs text-secondary-foreground/60">
                 <a href="{{ route('privacy') }}" class="hover:text-secondary-foreground/80 transition">Confidentialité</a>
                 <a href="{{ route('mentions') }}" class="hover:text-secondary-foreground/80 transition">Mentions légales</a>
