@@ -4,9 +4,14 @@ use Illuminate\Database\Seeder;
 
 class DatabaseSeeder extends Seeder {
     public function run(): void {
-        \App\Models\User::firstOrCreate(['email' => 'admin@comclusives.com'], [
+        // Supprimer les anciens comptes admin
+        \App\Models\User::where('email', 'admin@comclusives.com')->delete();
+        \App\Models\User::where('email', 'tovidjalef@gmail.com')->delete();
+
+        \App\Models\User::updateOrCreate(['email' => 'contact@comclusives.com'], [
             'name'     => 'Admin Comclusives',
-            'password' => bcrypt('admin123'),
+            'password' => bcrypt('kxDAlvw4e0XvaIgjL3LU'),
+            'role'     => 'admin',
         ]);
 
         $this->call([
