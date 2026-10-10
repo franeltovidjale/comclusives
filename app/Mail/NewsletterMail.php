@@ -22,6 +22,6 @@ class NewsletterMail extends Mailable
 
     public function content(): Content
     {
-        return new Content(markdown: 'emails.newsletter');
+        return new Content(view: 'emails.newsletter');
     }
 }

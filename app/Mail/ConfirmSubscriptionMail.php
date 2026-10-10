@@ -21,6 +21,6 @@ class ConfirmSubscriptionMail extends Mailable
 
     public function content(): Content
     {
-        return new Content(markdown: 'emails.confirm-subscription');
+        return new Content(view: 'emails.confirm-subscription');
     }
 }
