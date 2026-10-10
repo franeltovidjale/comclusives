@@ -22,8 +22,7 @@
                     <button type="submit" class="text-sm font-medium text-foreground/70 hover:text-primary transition">Déconnexion</button>
                 </form>
             @else
-                <a class="text-sm font-medium text-foreground/70 hover:text-primary transition" href="{{ route('login') }}">Connexion</a>
-                <a class="btn-primary text-sm" href="{{ route('register') }}">S'inscrire</a>
+                <a class="btn-primary text-sm" href="{{ route('contact') }}">Contact</a>
             @endauth
         </div>
         <button id="navToggle" class="lg:hidden p-2 rounded-xl hover:bg-soft"><i data-lucide="menu" class="h-6 w-6"></i></button>
@@ -45,8 +44,7 @@
                     <button type="submit" class="w-full text-left px-4 py-3 rounded-xl text-foreground hover:bg-soft hover:text-primary">Déconnexion</button>
                 </form>
             @else
-                <a class="px-4 py-3 rounded-xl text-foreground hover:bg-soft hover:text-primary" href="{{ route('login') }}">Connexion</a>
-                <a class="btn-primary mt-2" href="{{ route('register') }}">S'inscrire</a>
+                <a class="btn-primary mt-2" href="{{ route('contact') }}">Contact</a>
             @endauth
         </div>
     </div>
