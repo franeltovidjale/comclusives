@@ -149,7 +149,7 @@
 </div>
 
 <script>
-    document.addEventListener('DOMContentLoaded', () => lucide.createIcons());
+    document.addEventListener('DOMContentLoaded', () => { if(typeof lucide !== 'undefined') lucide.createIcons(); });
     function openSidebar() {
         document.getElementById('adminSidebar').classList.add('open');
         document.getElementById('sidebarOverlay').classList.add('open');

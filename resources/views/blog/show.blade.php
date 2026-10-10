@@ -438,7 +438,7 @@
                 <span class="text-xs font-medium text-gray-500">LinkedIn</span>
             </a>
         </div>
-        <button id="copyLinkBtn" onclick="navigator.clipboard?.writeText(location.href).then(()=>{this.textContent='✓ Copié';setTimeout(()=>{this.innerHTML='<i data-lucide=\'link\' class=\'h-4 w-4 inline mr-1\'></i> Copier le lien';lucide.createIcons();},2000)})"
+        <button id="copyLinkBtn" onclick="navigator.clipboard?.writeText(location.href).then(()=>{this.textContent='✓ Copié';setTimeout(()=>{this.innerHTML='<i data-lucide=\'link\' class=\'h-4 w-4 inline mr-1\'></i> Copier le lien';if(typeof lucide!=='undefined')lucide.createIcons();},2000)})"
                 class="w-full py-3 rounded-2xl border border-gray-200 text-sm font-semibold text-gray-700 hover:bg-gray-50 transition flex items-center justify-center gap-2">
             <i data-lucide="link" class="h-4 w-4"></i> Copier le lien
         </button>
@@ -453,7 +453,7 @@ const ARTICLE_TITLE = '{{ addslashes($article->title) }}';
 const COMMENT_URL = '{{ route("comments.store", $article->id) }}';
 const CSRF_TOKEN = '{{ csrf_token() }}';
 
-lucide.createIcons();
+if (typeof lucide !== 'undefined') lucide.createIcons();
         // ===== COMMENTAIRES =====
         const COLORS = ['#0d9488','#6366f1','#f59e0b','#ec4899','#10b981','#3b82f6','#8b5cf6'];
         const DEMO = [
