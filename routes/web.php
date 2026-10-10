@@ -5,16 +5,6 @@ use App\Http\Controllers\SubscriberController;
 use App\Http\Controllers\Admin;
 use Illuminate\Support\Facades\Route;
 
-// ─── TEST MAIL (supprimer après test) ────────────────
-Route::get('/test-mail', function() {
-    try {
-        \Illuminate\Support\Facades\Mail::raw('Test email Comclusives', fn($m) => $m->to('tovidjalef@gmail.com')->subject('Test SMTP'));
-        return 'Email envoyé avec succès !';
-    } catch (\Exception $e) {
-        return 'Erreur : '.$e->getMessage();
-    }
-});
-
 // ─── FRONT ───────────────────────────────────────────
 Route::get('/offline', fn() => view('offline'))->name('offline');
 Route::get('/', [ArticleController::class, 'home'])->name('home');
