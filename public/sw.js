@@ -1,4 +1,4 @@
-const CACHE = 'comclusives-v1';
+const CACHE = 'comclusives-v2';
 const OFFLINE_URL = '/offline';
 
 const PRECACHE = [

@@ -438,7 +438,7 @@
 @endif
 
 {{-- Share floating button --}}
-<button id="shareBtn" class="fixed bottom-6 left-6 z-40 flex items-center gap-2 px-5 py-3 rounded-full text-white text-sm font-semibold shadow-lg hover:scale-105 transition-all" style="background:linear-gradient(135deg,#0d9488,#6366f1)">
+<button id="shareBtn" class="fixed bottom-6 left-6 z-40 flex items-center gap-2 px-5 py-3 rounded-full text-white text-sm font-semibold shadow-lg hover:scale-105 transition-all" style="background:linear-gradient(135deg,#0d9488,#6366f1);touch-action:manipulation;-webkit-tap-highlight-color:transparent;cursor:pointer">
     <svg class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M4 12v8a2 2 0 002 2h12a2 2 0 002-2v-8M16 6l-4-4-4 4M12 2v13"/></svg>
     Partager
 </button>
@@ -1034,7 +1034,7 @@ if (typeof lucide !== 'undefined') lucide.createIcons();
         const rawUrl = window.location.href;
         function openShareModal() { shareModal.classList.remove('hidden'); shareModal.classList.add('flex'); document.body.style.overflow='hidden'; }
         function closeShareModal() { shareModal.classList.add('hidden'); shareModal.classList.remove('flex'); document.body.style.overflow=''; }
-        shareBtn.addEventListener('click', function() {
+        function doShare() {
             if (navigator.share) {
                 navigator.share({
                     title: '{{ addslashes($article->title) }}',
@@ -1046,6 +1046,11 @@ if (typeof lucide !== 'undefined') lucide.createIcons();
                 return;
             }
             openShareModal();
+        }
+        shareBtn.addEventListener('click', doShare);
+        shareBtn.addEventListener('touchend', function(e) {
+            e.preventDefault();
+            doShare();
         });
         closeShare.addEventListener('click', closeShareModal);
         shareOverlay.addEventListener('click', closeShareModal);
