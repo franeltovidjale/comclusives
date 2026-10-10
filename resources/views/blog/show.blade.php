@@ -407,8 +407,8 @@
             <p class="text-sm text-gray-500">Un code à 6 chiffres a été envoyé à <strong id="otpEmailDisplay"></strong>. Valable 10 minutes.</p>
         </div>
         <div class="flex gap-2 justify-center mb-4">
-            <input id="otpInput" type="text" inputmode="numeric" maxlength="6" placeholder="000000"
-                   class="w-40 text-center text-3xl font-mono tracking-widest px-3 py-3 border-2 border-gray-200 rounded-2xl focus:outline-none focus:border-primary transition">
+            <input id="otpInput" type="text" inputmode="numeric" maxlength="6" placeholder="· · · · · ·"
+                   class="w-48 text-center text-2xl font-semibold tracking-widest px-4 py-3 border-2 border-gray-200 rounded-2xl focus:outline-none focus:border-primary transition">
         </div>
         <p id="otpError" class="text-center text-sm text-red-500 mb-4 hidden"></p>
         <button id="otpVerifyBtn" class="w-full px-4 py-3 rounded-full text-sm font-semibold text-white healing-gradient transition">Valider le commentaire</button>
