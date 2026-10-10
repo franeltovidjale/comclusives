@@ -2,13 +2,13 @@
 @section('title', 'Politique de confidentialité – Comclusives')
 
 @section('content')
-{{-- Hero --}}
-<div class="healing-gradient pt-32 pb-16 text-white text-center px-4">
-    <p class="text-sm font-semibold uppercase tracking-widest mb-3" style="color:#a7f3d0">Légal</p>
-    <h1 class="text-4xl sm:text-5xl font-bold mb-3">Politique de confidentialité</h1>
-    <p style="color:#a7f3d0" class="text-sm">Dernière mise à jour : octobre 2025</p>
-</div>
-
+<section class="relative -mt-20 pt-20 overflow-hidden hero-gradient">
+    <div class="max-w-3xl mx-auto px-4 sm:px-6 text-center py-20 lg:py-24">
+        <span class="inline-flex items-center px-4 py-1.5 rounded-full bg-white/70 text-xs font-semibold text-primary uppercase tracking-wider mb-6" style="backdrop-filter:blur(10px)">Légal</span>
+        <h1 class="text-4xl sm:text-5xl font-bold tracking-tight leading-tight mb-4">Politique de confidentialité</h1>
+        <p class="text-sm text-muted-foreground">Dernière mise à jour : octobre 2025</p>
+    </div>
+</section>
 <div class="max-w-2xl mx-auto px-4 sm:px-6 py-16">
     @php
     $sections = [
