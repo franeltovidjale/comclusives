@@ -12,6 +12,9 @@ Route::get('/a-propos', [ArticleController::class, 'about'])->name('about');
 Route::get('/blog', [ArticleController::class, 'index'])->name('blog.index');
 Route::get('/blog/{slug}', [ArticleController::class, 'show'])->name('blog.show');
 Route::get('/contact', fn() => view('contact'))->name('contact');
+Route::get('/confidentialite', fn() => view('legal.privacy'))->name('privacy');
+Route::get('/mentions-legales', fn() => view('legal.mentions'))->name('mentions');
+Route::get('/conditions-utilisation', fn() => view('legal.terms'))->name('terms');
 Route::get('/learn-french', fn() => view('learn-french'))->name('learn-french');
 Route::get('/tamtal', fn() => view('tamtal'))->name('tamtal');
 
