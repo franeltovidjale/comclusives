@@ -778,10 +778,10 @@ if (typeof lucide !== 'undefined') lucide.createIcons();
         const commentEmailInput = document.getElementById('commentEmailInput');
 
         // Restore pending comment after login/register
-        const pendingComment = sessionStorage.getItem('pendingComment');
-        if (pendingComment) {
+        const restoredComment = sessionStorage.getItem('pendingComment');
+        if (restoredComment) {
             sessionStorage.removeItem('pendingComment');
-            commentInput.value = pendingComment;
+            commentInput.value = restoredComment;
             commentActions.classList.remove('hidden');
             submitComment.disabled = false;
             submitComment.classList.remove('opacity-40');
