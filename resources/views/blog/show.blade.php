@@ -543,12 +543,18 @@ if (typeof lucide !== 'undefined') lucide.createIcons();
             likeBtn.classList.add('text-primary');
         }
 
+        function setDisliked(dislikeBtn) {
+            dislikeBtn.dataset.disliked = 'true';
+            const icon = dislikeBtn.querySelector('.dislike-icon');
+            icon.style.fill = '#ef4444';
+            icon.style.stroke = '#ef4444';
+        }
+
         function clearDislike(dislikeBtn) {
             dislikeBtn.dataset.disliked = 'false';
             const icon = dislikeBtn.querySelector('.dislike-icon');
             icon.style.fill = 'none';
             icon.style.stroke = 'currentColor';
-            dislikeBtn.classList.remove('text-foreground/70');
         }
 
         function clearLike(likeBtn) {
@@ -605,11 +611,7 @@ if (typeof lucide !== 'undefined') lucide.createIcons();
                 if (disliked) {
                     clearDislike(this);
                 } else {
-                    this.dataset.disliked = 'true';
-                    const icon = this.querySelector('.dislike-icon');
-                    icon.style.fill = '#6b7280';
-                    icon.style.stroke = '#6b7280';
-                    this.classList.add('text-foreground/70');
+                    setDisliked(this);
                 }
             });
 
