@@ -68,22 +68,23 @@
                     </div>
 
                     <!-- Formulaire -->
-                    <form class="lg:col-span-3 grid sm:grid-cols-2 gap-4" onsubmit="handleSubmit(event)">
+                    <form id="contactForm" class="lg:col-span-3 grid sm:grid-cols-2 gap-4" onsubmit="handleSubmit(event)">
+                        @csrf
                         <div>
                             <label class="text-sm font-medium">Nom complet <span class="text-red-500">*</span></label>
-                            <input type="text" required class="mt-1 w-full px-4 py-3 rounded-xl border border-border bg-background focus:outline-none focus:ring-2 focus:ring-primary/30" placeholder="Votre nom" />
+                            <input type="text" name="name" required class="mt-1 w-full px-4 py-3 rounded-xl border border-border bg-background focus:outline-none focus:ring-2 focus:ring-primary/30" placeholder="Votre nom" />
                         </div>
                         <div>
                             <label class="text-sm font-medium">E-mail <span class="text-red-500">*</span></label>
-                            <input type="email" required class="mt-1 w-full px-4 py-3 rounded-xl border border-border bg-background focus:outline-none focus:ring-2 focus:ring-primary/30" placeholder="votre@email.com" />
+                            <input type="email" name="email" required class="mt-1 w-full px-4 py-3 rounded-xl border border-border bg-background focus:outline-none focus:ring-2 focus:ring-primary/30" placeholder="votre@email.com" />
                         </div>
                         <div>
                             <label class="text-sm font-medium">Téléphone</label>
-                            <input type="tel" class="mt-1 w-full px-4 py-3 rounded-xl border border-border bg-background focus:outline-none focus:ring-2 focus:ring-primary/30" placeholder="+229..." />
+                            <input type="tel" name="phone" class="mt-1 w-full px-4 py-3 rounded-xl border border-border bg-background focus:outline-none focus:ring-2 focus:ring-primary/30" placeholder="+229..." />
                         </div>
                         <div>
                             <label class="text-sm font-medium">Objet</label>
-                            <select class="mt-1 w-full px-4 py-3 rounded-xl border border-border bg-background focus:outline-none focus:ring-2 focus:ring-primary/30">
+                            <select name="subject" class="mt-1 w-full px-4 py-3 rounded-xl border border-border bg-background focus:outline-none focus:ring-2 focus:ring-primary/30">
                                 <option>Renseignement</option>
                                 <option>Rendez-vous</option>
                                 <option>Partenariat</option>
@@ -92,11 +93,12 @@
                         </div>
                         <div class="sm:col-span-2">
                             <label class="text-sm font-medium">Message <span class="text-red-500">*</span></label>
-                            <textarea rows="5" required class="mt-1 w-full px-4 py-3 rounded-xl border border-border bg-background focus:outline-none focus:ring-2 focus:ring-primary/30" placeholder="Votre message..."></textarea>
+                            <textarea name="message" rows="5" required class="mt-1 w-full px-4 py-3 rounded-xl border border-border bg-background focus:outline-none focus:ring-2 focus:ring-primary/30" placeholder="Votre message..."></textarea>
                         </div>
                         <div class="sm:col-span-2">
-                            <button type="submit" class="btn-primary w-full">Envoyer le message</button>
+                            <button type="submit" id="contactBtn" class="btn-primary w-full">Envoyer le message</button>
                             <p id="successMsg" class="hidden mt-3 text-center text-sm text-primary font-medium">✓ Message envoyé ! Nous vous répondrons sous 48h.</p>
+                            <p id="errorMsg" class="hidden mt-3 text-center text-sm text-red-500">Une erreur est survenue. Réessayez ou écrivez-nous directement.</p>
                         </div>
                     </form>
                 </div>
@@ -116,3 +118,33 @@
         </section>
     
 @endsection
+
+@push('scripts')
+<script>
+async function handleSubmit(e) {
+    e.preventDefault();
+    const form = document.getElementById('contactForm');
+    const btn  = document.getElementById('contactBtn');
+    const ok   = document.getElementById('successMsg');
+    const err  = document.getElementById('errorMsg');
+    ok.classList.add('hidden'); err.classList.add('hidden');
+    btn.disabled = true; btn.textContent = 'Envoi…';
+    try {
+        const res = await fetch('{{ route("contact.send") }}', {
+            method: 'POST',
+            headers: { 'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content, 'Accept': 'application/json' },
+            body: new FormData(form)
+        });
+        if (res.ok) {
+            form.reset();
+            ok.classList.remove('hidden');
+        } else {
+            err.classList.remove('hidden');
+        }
+    } catch(e) {
+        err.classList.remove('hidden');
+    }
+    btn.disabled = false; btn.textContent = 'Envoyer le message';
+}
+</script>
+@endpush

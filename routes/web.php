@@ -12,6 +12,24 @@ Route::get('/a-propos', [ArticleController::class, 'about'])->name('about');
 Route::get('/blog', [ArticleController::class, 'index'])->name('blog.index');
 Route::get('/blog/{slug}', [ArticleController::class, 'show'])->name('blog.show');
 Route::get('/contact', fn() => view('contact'))->name('contact');
+Route::post('/contact', function (\Illuminate\Http\Request $request) {
+    $data = $request->validate([
+        'name'    => 'required|string|max:100',
+        'email'   => 'required|email|max:255',
+        'phone'   => 'nullable|string|max:30',
+        'subject' => 'nullable|string|max:100',
+        'message' => 'required|string|max:3000',
+    ]);
+    \Illuminate\Support\Facades\Mail::to('contact@comclusives.com')
+        ->send(new \App\Mail\ContactMail(
+            $data['name'],
+            $data['email'],
+            $data['phone'] ?? '',
+            $data['subject'] ?? 'Renseignement',
+            $data['message'],
+        ));
+    return response()->json(['ok' => true]);
+})->name('contact.send');
 Route::get('/confidentialite', fn() => view('legal.privacy'))->name('privacy');
 Route::get('/mentions-legales', fn() => view('legal.mentions'))->name('mentions');
 Route::get('/conditions-utilisation', fn() => view('legal.terms'))->name('terms');
