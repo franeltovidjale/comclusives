@@ -4,6 +4,7 @@
 @section('keywords','communication inclusive, inclusion sociale, éducation inclusive, diversité, égalité des genres, Bénin, ressources pédagogiques')
 @section('og_image', asset('images/logo-horizontal.png'))
 @push('head')
+<link rel="preload" as="image" href="{{ asset('images/Plan-de-travail-1Comclu1-scaled.png') }}">
 <script type="application/ld+json">
 {
     "@@context": "https://schema.org",
@@ -47,9 +48,9 @@
                 <div class="relative" data-aos="fade-left">
                     <div class="relative rounded-[2rem] overflow-hidden shadow-soft border border-white/40 bg-white/20">
                         <div id="heroSlider" class="relative w-full h-[520px]">
-                            <img src="{{ asset('images/Plan-de-travail-1Comclu1-scaled.png') }}" alt="Comclusives – slide 1" class="hero-slide w-full h-full object-contain transition-opacity duration-700 opacity-100" />
-                            <img src="{{ asset('images/Plan-de-travail-1Comclu2-scaled.png') }}" alt="Comclusives – slide 2" class="hero-slide w-full h-full object-contain transition-opacity duration-700 absolute inset-0 opacity-0" />
-                            <img src="{{ asset('images/Plan-de-travail-1Comclu3-scaled.png') }}" alt="Comclusives – slide 3" class="hero-slide w-full h-full object-contain transition-opacity duration-700 absolute inset-0 opacity-0" />
+                            <img src="{{ asset('images/Plan-de-travail-1Comclu1-scaled.png') }}" alt="Comclusives – slide 1" width="800" height="520" fetchpriority="high" class="hero-slide w-full h-full object-contain transition-opacity duration-700 opacity-100" />
+                            <img src="{{ asset('images/Plan-de-travail-1Comclu2-scaled.png') }}" alt="Comclusives – slide 2" width="800" height="520" loading="lazy" class="hero-slide w-full h-full object-contain transition-opacity duration-700 absolute inset-0 opacity-0" />
+                            <img src="{{ asset('images/Plan-de-travail-1Comclu3-scaled.png') }}" alt="Comclusives – slide 3" width="800" height="520" loading="lazy" class="hero-slide w-full h-full object-contain transition-opacity duration-700 absolute inset-0 opacity-0" />
                         </div>
                         <!-- points de navigation -->
                         <div class="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-2">
