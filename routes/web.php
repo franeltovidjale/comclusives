@@ -20,12 +20,19 @@ Route::post('/contact', function (\Illuminate\Http\Request $request) {
         'subject' => 'nullable|string|max:100',
         'message' => 'required|string|max:3000',
     ]);
+    \App\Models\ContactMessage::create([
+        'name'  => $data['name'],
+        'email' => $data['email'],
+        'phone' => $data['phone'] ?? '',
+        'topic' => $data['subject'] ?? 'Renseignement',
+        'body'  => $data['message'],
+    ]);
     \Illuminate\Support\Facades\Mail::to('contact@comclusives.com')
         ->send(new \App\Mail\ContactMail(
             $data['name'],
             $data['email'],
             $data['phone'] ?? '',
-            $data['subject'] ?? 'Renseignement', // passed as $topic
+            $data['subject'] ?? 'Renseignement',
             $data['message'],
         ));
     return response()->json(['ok' => true]);
@@ -65,6 +72,9 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::post('categories', [Admin\CategoryController::class, 'store'])->name('categories.store');
     Route::patch('categories/{category}', [Admin\CategoryController::class, 'update'])->name('categories.update');
     Route::delete('categories/{category}', [Admin\CategoryController::class, 'destroy'])->name('categories.destroy');
+
+    Route::get('contact', [Admin\ContactMessageController::class, 'index'])->name('contact.index');
+    Route::delete('contact/{message}', [Admin\ContactMessageController::class, 'destroy'])->name('contact.destroy');
 
     Route::get('subscribers', [Admin\SubscriberController::class, 'index'])->name('subscribers.index');
     Route::delete('subscribers/{subscriber}', [Admin\SubscriberController::class, 'destroy'])->name('subscribers.destroy');

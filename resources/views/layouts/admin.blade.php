@@ -101,6 +101,14 @@
                 <span class="badge-count ml-auto">{{ $pendingCount }}</span>
             @endif
         </a>
+        <a href="{{ route('admin.contact.index') }}" class="nav-item {{ request()->routeIs('admin.contact*') ? 'active' : '' }}">
+            <i data-lucide="mail"></i>
+            <span>Messages</span>
+            @php $unreadCount = \App\Models\ContactMessage::where('read', false)->count(); @endphp
+            @if($unreadCount > 0)
+                <span class="badge-count ml-auto">{{ $unreadCount }}</span>
+            @endif
+        </a>
         <div class="my-4 border-t border-white/10 mx-4"></div>
         <p class="px-6 text-xs font-semibold uppercase tracking-widest text-white/30 mb-3">Site</p>
         <a href="{{ route('home') }}" target="_blank" class="nav-item">
