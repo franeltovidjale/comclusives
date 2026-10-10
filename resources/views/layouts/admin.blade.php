@@ -169,6 +169,34 @@
         document.body.style.overflow = '';
     }
 </script>
+{{-- Confirm Modal --}}
+<div id="confirmModal" class="fixed inset-0 z-50 hidden items-center justify-center">
+    <div class="absolute inset-0 bg-black/40" onclick="closeConfirm()"></div>
+    <div class="relative bg-white rounded-2xl shadow-2xl p-6 w-full max-w-sm mx-4">
+        <h3 class="font-bold text-gray-900 text-base mb-2" id="confirmTitle">Confirmer la suppression</h3>
+        <p class="text-sm text-gray-500 mb-6" id="confirmText">Cette action est irréversible.</p>
+        <div class="flex gap-3 justify-end">
+            <button onclick="closeConfirm()" class="px-4 py-2 rounded-xl text-sm font-semibold bg-gray-100 text-gray-600 hover:bg-gray-200 transition">Annuler</button>
+            <button id="confirmOkBtn" class="px-4 py-2 rounded-xl text-sm font-semibold bg-red-500 text-white hover:bg-red-600 transition">Supprimer</button>
+        </div>
+    </div>
+</div>
+<script>
+let _confirmCb = null;
+function showConfirm(title, text, cb) {
+    _confirmCb = cb;
+    document.getElementById('confirmTitle').textContent = title;
+    document.getElementById('confirmText').textContent = text;
+    const modal = document.getElementById('confirmModal');
+    modal.classList.remove('hidden'); modal.classList.add('flex');
+    document.getElementById('confirmOkBtn').onclick = () => { closeConfirm(); cb(); };
+}
+function closeConfirm() {
+    const modal = document.getElementById('confirmModal');
+    modal.classList.add('hidden'); modal.classList.remove('flex');
+    _confirmCb = null;
+}
+</script>
 @stack('scripts')
 </body>
 </html>

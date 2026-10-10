@@ -15,6 +15,9 @@ class SubscriberController extends Controller
     public function destroy(Subscriber $subscriber)
     {
         $subscriber->delete();
+        if (request()->expectsJson()) {
+            return response()->json(['deleted' => true]);
+        }
         return back()->with('success', 'Abonné supprimé.');
     }
 }

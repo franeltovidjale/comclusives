@@ -126,18 +126,19 @@ async function toggleApprove(id, btn) {
 }
 
 async function deleteComment(id, btn) {
-    if (!confirm('Supprimer ce commentaire ?')) return;
-    btn.disabled = true;
     const row = btn.closest('.comment-row');
-    const res = await fetch(`/admin/comments/${id}`, {
-        method: 'DELETE',
-        headers: {'X-CSRF-TOKEN': CSRF, 'Accept': 'application/json'}
+    showConfirm('Supprimer ce commentaire ?', 'Cette action est irreversible.', async () => {
+        btn.disabled = true;
+        const res = await fetch(`/admin/comments/${id}`, {
+            method: 'DELETE',
+            headers: {'X-CSRF-TOKEN': CSRF, 'Accept': 'application/json'}
+        });
+        if (!res.ok) { btn.disabled = false; return; }
+        row.style.opacity = '0';
+        row.style.transition = 'opacity .3s';
+        setTimeout(() => { row.remove(); updateCounts(); filterComments(currentFilter); }, 300);
+        toast('Commentaire supprime.');
     });
-    if (!res.ok) { btn.disabled = false; return; }
-    row.style.opacity = '0';
-    row.style.transition = 'opacity .3s';
-    setTimeout(() => { row.remove(); updateCounts(); filterComments(currentFilter); }, 300);
-    toast('Commentaire supprime.');
 }
 
 function updateCounts() {
