@@ -610,7 +610,7 @@ if (typeof lucide !== 'undefined') lucide.createIcons();
             function showLoginPrompt() {
                 const msg = document.createElement('div');
                 msg.style.cssText = 'position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:#0f1923;color:#fff;padding:12px 20px;border-radius:50px;font-size:13px;font-weight:600;z-index:9999;display:flex;align-items:center;gap:10px;box-shadow:0 8px 30px rgba(0,0,0,0.3)';
-                msg.innerHTML = 'Connectez-vous pour réagir &nbsp;<a href="/inscription" style="color:#0d9488;text-decoration:underline">S'inscrire</a> &nbsp;<a href="/login" style="color:#9ca3af;text-decoration:underline">Connexion</a>';
+                msg.innerHTML = `Connectez-vous pour réagir &nbsp;<a href="/inscription" style="color:#0d9488;text-decoration:underline">S'inscrire</a> &nbsp;<a href="/login" style="color:#9ca3af;text-decoration:underline">Connexion</a>`;
                 document.body.appendChild(msg);
                 setTimeout(() => msg.remove(), 4000);
             }
