@@ -187,7 +187,7 @@
                     <span>/</span>
                     <a href="{{ route('blog.index') }}" class="hover:text-primary transition">Blog</a>
                     <span>/</span>
-                    <span class="text-gray-500 truncate max-w-xs">{{ Str::limit($article->title, 50) }}</span>
+                    <span class="text-gray-500">{{ $article->title }}</span>
                 </nav>
 
                 {{-- Excerpt --}}
