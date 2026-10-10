@@ -71,11 +71,11 @@
                     <a href="{{ route('admin.articles.edit',$a) }}" title="Éditer" class="h-8 w-8 rounded-lg bg-green-50 text-green-600 hover:bg-green-100 flex items-center justify-center transition">
                         <i data-lucide="pencil" class="h-4 w-4"></i>
                     </a>
-                    <form method="POST" action="{{ route('admin.articles.destroy',$a) }}" onsubmit="return confirm('Supprimer cet article ?')">@csrf @method('DELETE')
-                        <button title="Supprimer" class="h-8 w-8 rounded-lg bg-red-50 text-red-500 hover:bg-red-100 flex items-center justify-center transition">
-                            <i data-lucide="trash-2" class="h-4 w-4"></i>
-                        </button>
-                    </form>
+                    <form id="del-{{ $a->id }}" method="POST" action="{{ route('admin.articles.destroy',$a) }}">@csrf @method('DELETE')</form>
+                    <button title="Supprimer" onclick="showConfirm('Supprimer cet article ?','Cette action est irreversible.',()=>document.getElementById('del-{{ $a->id }}').submit())"
+                        class="h-8 w-8 rounded-lg bg-red-50 text-red-500 hover:bg-red-100 flex items-center justify-center transition">
+                        <i data-lucide="trash-2" class="h-4 w-4"></i>
+                    </button>
                 </div>
             </td>
         </tr>
