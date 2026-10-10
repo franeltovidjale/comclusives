@@ -60,7 +60,11 @@
 @media (max-width: 767px) { .article-sidebar { display: none !important; } }
 
 /* Article prose */
-.article-prose { font-size: 1.0625rem; line-height: 1.85; color: #374151; overflow-x: hidden; word-break: break-word; }
+.article-prose { font-size: 1.0625rem; line-height: 1.85; color: #374151; word-break: break-word; max-width: 100%; }
+.article-prose * { max-width: 100%; box-sizing: border-box; }
+.article-prose div, .article-prose section, .article-prose article { overflow: visible !important; visibility: visible !important; opacity: 1 !important; display: revert; }
+/* Force AOS elements inside article to be visible */
+.article-prose [data-aos] { opacity: 1 !important; transform: none !important; }
 .article-prose p { margin-bottom: 1.4rem; }
 .article-prose h2 { font-family:Outfit,sans-serif; font-size:1.5rem; font-weight:700; color:#111827; margin:2.5rem 0 1rem; padding-bottom:.5rem; border-bottom:2px solid #e5f0ef; }
 .article-prose h3 { font-family:Outfit,sans-serif; font-size:1.2rem; font-weight:700; color:#111827; margin:2rem 0 .75rem; }
