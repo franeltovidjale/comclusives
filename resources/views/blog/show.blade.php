@@ -4,7 +4,7 @@
 @section('keywords', $article->categories->pluck('name')->implode(', ') . ', Comclusives, communication inclusive')
 @section('og_type','article')
 @section('og_title', $article->meta_title ?? $article->title)
-@section('og_image', $article->cover_image ? asset('storage/'.$article->cover_image) : asset('images/logo-horizontal.png'))
+@section('og_image', $article->cover_url ?? asset('images/og-image.jpg'))
 @section('og_extra')
 <meta property="article:published_time" content="{{ $article->published_at?->toIso8601String() }}">
 <meta property="article:modified_time" content="{{ $article->updated_at?->toIso8601String() }}">
@@ -20,7 +20,7 @@
     "@@type": "Article",
     "headline": "{{ addslashes($article->title) }}",
     "description": "{{ addslashes(Str::limit(strip_tags(html_entity_decode($article->excerpt ?? '')), 155)) }}",
-    "image": "{{ $article->cover_image ? asset('storage/'.$article->cover_image) : asset('images/logo-horizontal.png') }}",
+    "image": "{{ $article->cover_url ?? asset('images/og-image.jpg') }}",
     "datePublished": "{{ $article->published_at?->toIso8601String() }}",
     "dateModified": "{{ $article->updated_at?->toIso8601String() }}",
     "author": {
