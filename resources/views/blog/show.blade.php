@@ -1038,8 +1038,8 @@ if (typeof lucide !== 'undefined') lucide.createIcons();
         const rawUrl = window.location.href;
         function openShareModal() { shareModal.classList.remove('hidden'); shareModal.classList.add('flex'); document.body.style.overflow='hidden'; }
         function closeShareModal() { shareModal.classList.add('hidden'); shareModal.classList.remove('flex'); document.body.style.overflow=''; }
-        function doShare() {
-            if (navigator.share) {
+        shareBtn.addEventListener('click', function() {
+            if (typeof navigator.share === 'function') {
                 navigator.share({
                     title: '{{ addslashes($article->title) }}',
                     text: '{{ addslashes(Str::limit(strip_tags($article->excerpt ?? ''), 100)) }}',
@@ -1047,14 +1047,9 @@ if (typeof lucide !== 'undefined') lucide.createIcons();
                 }).catch(function(e) {
                     if (e.name !== 'AbortError') openShareModal();
                 });
-                return;
+            } else {
+                openShareModal();
             }
-            openShareModal();
-        }
-        shareBtn.addEventListener('click', doShare);
-        shareBtn.addEventListener('touchend', function(e) {
-            e.preventDefault();
-            doShare();
         });
         closeShare.addEventListener('click', closeShareModal);
         shareOverlay.addEventListener('click', closeShareModal);
