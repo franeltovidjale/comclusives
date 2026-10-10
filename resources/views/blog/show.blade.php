@@ -573,6 +573,94 @@ if (typeof lucide !== 'undefined') lucide.createIcons();
             likeBtn.classList.remove('text-primary');
         }
 
+        function showLoginPrompt(tab) {
+            tab = tab || 'login';
+            const existing = document.querySelector('[data-auth-overlay]');
+            if (existing) { existing.remove(); }
+            const CSRF = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '{{ csrf_token() }}';
+            const overlay = document.createElement('div');
+            overlay.style.cssText = 'position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,0.5);display:flex;align-items:center;justify-content:center;padding:16px';
+            overlay.dataset.authOverlay = '1';
+            overlay.innerHTML = `
+                <div style="background:#fff;border-radius:24px;padding:32px;max-width:380px;width:100%;box-shadow:0 24px 60px rgba(0,0,0,0.2)">
+                    <div style="width:48px;height:4px;background:#0d9488;border-radius:2px;margin:0 auto 24px"></div>
+                    <div style="display:flex;border:1px solid #e5e7eb;border-radius:50px;padding:4px;margin-bottom:24px;gap:4px">
+                        <button id="tabLogin" onclick="switchTab('login')" style="flex:1;padding:8px;border-radius:50px;border:none;font-size:13px;font-weight:600;cursor:pointer;transition:all .2s;background:${tab==='login'?'#0d9488':'transparent'};color:${tab==='login'?'#fff':'#6b7280'}">Connexion</button>
+                        <button id="tabRegister" onclick="switchTab('register')" style="flex:1;padding:8px;border-radius:50px;border:none;font-size:13px;font-weight:600;cursor:pointer;transition:all .2s;background:${tab==='register'?'#0d9488':'transparent'};color:${tab==='register'?'#fff':'#6b7280'}">Inscription</button>
+                    </div>
+                    <div id="authError" style="display:none;background:#fef2f2;border:1px solid #fecaca;color:#dc2626;border-radius:12px;padding:10px 14px;font-size:13px;margin-bottom:16px"></div>
+                    <form id="authForm" onsubmit="submitAuth(event)">
+                        <input type="hidden" id="authTab" value="${tab}">
+                        <div id="fieldName" style="display:${tab==='register'?'block':'none'};margin-bottom:12px">
+                            <input name="name" type="text" placeholder="Votre prénom ou pseudo" style="width:100%;padding:12px 16px;border:1.5px solid #e5e7eb;border-radius:12px;font-size:14px;outline:none;box-sizing:border-box" onfocus="this.style.borderColor='#0d9488'" onblur="this.style.borderColor='#e5e7eb'">
+                        </div>
+                        <div style="margin-bottom:12px">
+                            <input name="email" type="email" placeholder="Adresse e-mail" required style="width:100%;padding:12px 16px;border:1.5px solid #e5e7eb;border-radius:12px;font-size:14px;outline:none;box-sizing:border-box" onfocus="this.style.borderColor='#0d9488'" onblur="this.style.borderColor='#e5e7eb'">
+                        </div>
+                        <div style="margin-bottom:6px">
+                            <input name="password" type="password" placeholder="Mot de passe" required minlength="8" style="width:100%;padding:12px 16px;border:1.5px solid #e5e7eb;border-radius:12px;font-size:14px;outline:none;box-sizing:border-box" onfocus="this.style.borderColor='#0d9488'" onblur="this.style.borderColor='#e5e7eb'">
+                        </div>
+                        <div id="forgotLink" style="text-align:right;margin-bottom:16px;display:${tab==='login'?'block':'none'}">
+                            <a href="/forgot-password" style="font-size:12px;color:#0d9488;text-decoration:none">Mot de passe oublié ?</a>
+                        </div>
+                        <div id="forgotSpacer" style="height:16px;display:${tab==='register'?'block':'none'}"></div>
+                        <button type="submit" id="authSubmitBtn" style="width:100%;padding:13px;background:#0d9488;color:#fff;border:none;border-radius:50px;font-size:14px;font-weight:600;cursor:pointer">${tab==='login'?'Se connecter':'Créer mon compte'}</button>
+                    </form>
+                    <button onclick="document.querySelector('[data-auth-overlay]').remove()" style="display:block;width:100%;margin-top:16px;font-size:13px;color:#9ca3af;background:none;border:none;cursor:pointer;text-align:center">Fermer</button>
+                </div>`;
+            overlay.addEventListener('click', e => { if (e.target === overlay) overlay.remove(); });
+            document.body.appendChild(overlay);
+        }
+
+        function switchTab(t) {
+            document.getElementById('authTab').value = t;
+            document.getElementById('fieldName').style.display = t === 'register' ? 'block' : 'none';
+            document.getElementById('forgotLink').style.display = t === 'login' ? 'block' : 'none';
+            document.getElementById('forgotSpacer').style.display = t === 'register' ? 'block' : 'none';
+            document.getElementById('authSubmitBtn').textContent = t === 'login' ? 'Se connecter' : 'Créer mon compte';
+            document.getElementById('tabLogin').style.background = t === 'login' ? '#0d9488' : 'transparent';
+            document.getElementById('tabLogin').style.color = t === 'login' ? '#fff' : '#6b7280';
+            document.getElementById('tabRegister').style.background = t === 'register' ? '#0d9488' : 'transparent';
+            document.getElementById('tabRegister').style.color = t === 'register' ? '#fff' : '#6b7280';
+            document.getElementById('authError').style.display = 'none';
+        }
+
+        async function submitAuth(e) {
+            e.preventDefault();
+            const tab = document.getElementById('authTab').value;
+            const form = e.target;
+            const btn = document.getElementById('authSubmitBtn');
+            const errDiv = document.getElementById('authError');
+            const data = { email: form.email.value, password: form.password.value };
+            if (tab === 'register') data.name = form.name.value;
+            btn.disabled = true; btn.textContent = '...';
+            errDiv.style.display = 'none';
+            try {
+                const url = tab === 'login' ? '/login' : '/inscription';
+                const res = await fetch(url, {
+                    method: 'POST',
+                    headers: {'Content-Type':'application/json','X-CSRF-TOKEN': document.querySelector('meta[name=csrf-token]').content,'Accept':'application/json'},
+                    body: JSON.stringify(data)
+                });
+                if (res.ok || res.redirected) {
+                    const commentText = document.getElementById('commentInput');
+                    if (commentText && commentText.value.trim()) {
+                        sessionStorage.setItem('pendingComment', commentText.value.trim());
+                    }
+                    window.location.href = window.location.href.split('#')[0] + '#commentaires';
+                    window.location.reload();
+                    return;
+                }
+                const json = await res.json().catch(() => ({}));
+                const msg = json.message || (json.errors ? Object.values(json.errors).flat().join(' ') : 'Une erreur est survenue.');
+                errDiv.textContent = msg; errDiv.style.display = 'block';
+                btn.disabled = false; btn.textContent = tab === 'login' ? 'Se connecter' : 'Créer mon compte';
+            } catch(err) {
+                errDiv.textContent = 'Erreur réseau, réessayez.'; errDiv.style.display = 'block';
+                btn.disabled = false; btn.textContent = tab === 'login' ? 'Se connecter' : 'Créer mon compte';
+            }
+        }
+
         function wireComment(div) {
             const likeBtn = div.querySelector('.like-btn');
             const dislikeBtn = div.querySelector('.dislike-btn');
@@ -599,94 +687,6 @@ if (typeof lucide !== 'undefined') lucide.createIcons();
                 });
                 if (res.status === 401) return { error: 'login_required' };
                 return res.json();
-            }
-
-            function showLoginPrompt(tab) {
-                tab = tab || 'login';
-                const existing = document.querySelector('[data-auth-overlay]');
-                if (existing) { existing.remove(); }
-                const CSRF = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '{{ csrf_token() }}';
-                const overlay = document.createElement('div');
-                overlay.style.cssText = 'position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,0.5);display:flex;align-items:center;justify-content:center;padding:16px';
-                overlay.dataset.authOverlay = '1';
-                overlay.innerHTML = `
-                    <div style="background:#fff;border-radius:24px;padding:32px;max-width:380px;width:100%;box-shadow:0 24px 60px rgba(0,0,0,0.2)">
-                        <div style="width:48px;height:4px;background:#0d9488;border-radius:2px;margin:0 auto 24px"></div>
-                        <div style="display:flex;border:1px solid #e5e7eb;border-radius:50px;padding:4px;margin-bottom:24px;gap:4px">
-                            <button id="tabLogin" onclick="switchTab('login')" style="flex:1;padding:8px;border-radius:50px;border:none;font-size:13px;font-weight:600;cursor:pointer;transition:all .2s;background:${tab==='login'?'#0d9488':'transparent'};color:${tab==='login'?'#fff':'#6b7280'}">Connexion</button>
-                            <button id="tabRegister" onclick="switchTab('register')" style="flex:1;padding:8px;border-radius:50px;border:none;font-size:13px;font-weight:600;cursor:pointer;transition:all .2s;background:${tab==='register'?'#0d9488':'transparent'};color:${tab==='register'?'#fff':'#6b7280'}">Inscription</button>
-                        </div>
-                        <div id="authError" style="display:none;background:#fef2f2;border:1px solid #fecaca;color:#dc2626;border-radius:12px;padding:10px 14px;font-size:13px;margin-bottom:16px"></div>
-                        <form id="authForm" onsubmit="submitAuth(event)">
-                            <input type="hidden" id="authTab" value="${tab}">
-                            <div id="fieldName" style="display:${tab==='register'?'block':'none'};margin-bottom:12px">
-                                <input name="name" type="text" placeholder="Votre prénom ou pseudo" style="width:100%;padding:12px 16px;border:1.5px solid #e5e7eb;border-radius:12px;font-size:14px;outline:none;box-sizing:border-box" onfocus="this.style.borderColor='#0d9488'" onblur="this.style.borderColor='#e5e7eb'">
-                            </div>
-                            <div style="margin-bottom:12px">
-                                <input name="email" type="email" placeholder="Adresse e-mail" required style="width:100%;padding:12px 16px;border:1.5px solid #e5e7eb;border-radius:12px;font-size:14px;outline:none;box-sizing:border-box" onfocus="this.style.borderColor='#0d9488'" onblur="this.style.borderColor='#e5e7eb'">
-                            </div>
-                            <div style="margin-bottom:6px">
-                                <input name="password" type="password" placeholder="Mot de passe" required minlength="8" style="width:100%;padding:12px 16px;border:1.5px solid #e5e7eb;border-radius:12px;font-size:14px;outline:none;box-sizing:border-box" onfocus="this.style.borderColor='#0d9488'" onblur="this.style.borderColor='#e5e7eb'">
-                            </div>
-                            <div id="forgotLink" style="text-align:right;margin-bottom:16px;display:${tab==='login'?'block':'none'}">
-                                <a href="/forgot-password" style="font-size:12px;color:#0d9488;text-decoration:none">Mot de passe oublié ?</a>
-                            </div>
-                            <div id="forgotSpacer" style="height:16px;display:${tab==='register'?'block':'none'}"></div>
-                            <button type="submit" id="authSubmitBtn" style="width:100%;padding:13px;background:#0d9488;color:#fff;border:none;border-radius:50px;font-size:14px;font-weight:600;cursor:pointer">${tab==='login'?'Se connecter':'Créer mon compte'}</button>
-                        </form>
-                        <button onclick="document.querySelector('[data-auth-overlay]').remove()" style="display:block;width:100%;margin-top:16px;font-size:13px;color:#9ca3af;background:none;border:none;cursor:pointer;text-align:center">Fermer</button>
-                    </div>`;
-                overlay.addEventListener('click', e => { if (e.target === overlay) overlay.remove(); });
-                document.body.appendChild(overlay);
-            }
-
-            function switchTab(t) {
-                document.getElementById('authTab').value = t;
-                document.getElementById('fieldName').style.display = t === 'register' ? 'block' : 'none';
-                document.getElementById('forgotLink').style.display = t === 'login' ? 'block' : 'none';
-                document.getElementById('forgotSpacer').style.display = t === 'register' ? 'block' : 'none';
-                document.getElementById('authSubmitBtn').textContent = t === 'login' ? 'Se connecter' : 'Créer mon compte';
-                document.getElementById('tabLogin').style.background = t === 'login' ? '#0d9488' : 'transparent';
-                document.getElementById('tabLogin').style.color = t === 'login' ? '#fff' : '#6b7280';
-                document.getElementById('tabRegister').style.background = t === 'register' ? '#0d9488' : 'transparent';
-                document.getElementById('tabRegister').style.color = t === 'register' ? '#fff' : '#6b7280';
-                document.getElementById('authError').style.display = 'none';
-            }
-
-            async function submitAuth(e) {
-                e.preventDefault();
-                const tab = document.getElementById('authTab').value;
-                const form = e.target;
-                const btn = document.getElementById('authSubmitBtn');
-                const errDiv = document.getElementById('authError');
-                const data = { email: form.email.value, password: form.password.value };
-                if (tab === 'register') data.name = form.name.value;
-                btn.disabled = true; btn.textContent = '...';
-                errDiv.style.display = 'none';
-                try {
-                    const url = tab === 'login' ? '/login' : '/inscription';
-                    const res = await fetch(url, {
-                        method: 'POST',
-                        headers: {'Content-Type':'application/json','X-CSRF-TOKEN': document.querySelector('meta[name=csrf-token]').content,'Accept':'application/json'},
-                        body: JSON.stringify(data)
-                    });
-                    if (res.ok || res.redirected) {
-                        const commentText = document.getElementById('commentInput');
-                        if (commentText && commentText.value.trim()) {
-                            sessionStorage.setItem('pendingComment', commentText.value.trim());
-                        }
-                        window.location.href = window.location.href.split('#')[0] + '#commentaires';
-                        window.location.reload();
-                        return;
-                    }
-                    const json = await res.json().catch(() => ({}));
-                    const msg = json.message || (json.errors ? Object.values(json.errors).flat().join(' ') : 'Une erreur est survenue.');
-                    errDiv.textContent = msg; errDiv.style.display = 'block';
-                    btn.disabled = false; btn.textContent = tab === 'login' ? 'Se connecter' : 'Créer mon compte';
-                } catch(err) {
-                    errDiv.textContent = 'Erreur réseau, réessayez.'; errDiv.style.display = 'block';
-                    btn.disabled = false; btn.textContent = tab === 'login' ? 'Se connecter' : 'Créer mon compte';
-                }
             }
 
             // Like toggle
