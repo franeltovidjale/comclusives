@@ -99,8 +99,10 @@
     <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js" defer></script>
     <script src="{{ asset('aos.js') }}" defer></script>
     <script>
-        lucide.createIcons();
-        AOS.init({ duration:700, once:true });
+        document.addEventListener('DOMContentLoaded', function() {
+            if (typeof lucide !== 'undefined') lucide.createIcons();
+            if (typeof AOS !== 'undefined') AOS.init({ duration:700, once:true });
+        });
         document.getElementById('yr') && (document.getElementById('yr').textContent = new Date().getFullYear());
         const h = document.getElementById('siteHeader');
         window.addEventListener('scroll', () => {
