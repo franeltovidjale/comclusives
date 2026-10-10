@@ -608,11 +608,20 @@ if (typeof lucide !== 'undefined') lucide.createIcons();
             }
 
             function showLoginPrompt() {
-                const msg = document.createElement('div');
-                msg.style.cssText = 'position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:#0f1923;color:#fff;padding:12px 20px;border-radius:50px;font-size:13px;font-weight:600;z-index:9999;display:flex;align-items:center;gap:10px;box-shadow:0 8px 30px rgba(0,0,0,0.3)';
-                msg.innerHTML = `Connectez-vous pour réagir &nbsp;<a href="/inscription" style="color:#0d9488;text-decoration:underline">S'inscrire</a> &nbsp;<a href="/login" style="color:#9ca3af;text-decoration:underline">Connexion</a>`;
-                document.body.appendChild(msg);
-                setTimeout(() => msg.remove(), 4000);
+                const overlay = document.createElement('div');
+                overlay.style.cssText = 'position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,0.5);display:flex;align-items:center;justify-content:center;padding:16px';
+                overlay.innerHTML = `
+                    <div style="background:#fff;border-radius:24px;padding:40px 32px;max-width:360px;width:100%;text-align:center;box-shadow:0 24px 60px rgba(0,0,0,0.2)">
+                        <div style="width:48px;height:4px;background:#0d9488;border-radius:2px;margin:0 auto 24px"></div>
+                        <h3 style="font-size:20px;font-weight:700;margin:0 0 8px;font-family:Outfit,sans-serif">Rejoignez la communauté</h3>
+                        <p style="font-size:14px;color:#6b7280;margin:0 0 28px;line-height:1.6">Créez un compte gratuit pour liker, commenter et interagir avec nos articles.</p>
+                        <a href="/inscription" style="display:block;width:100%;padding:12px;background:#0d9488;color:#fff;border-radius:50px;font-size:14px;font-weight:600;text-decoration:none;margin-bottom:10px">Créer un compte</a>
+                        <a href="/login" style="display:block;width:100%;padding:12px;background:#f3f4f6;color:#374151;border-radius:50px;font-size:14px;font-weight:600;text-decoration:none">Se connecter</a>
+                        <button onclick="this.closest('[data-overlay]').remove()" style="margin-top:20px;font-size:13px;color:#9ca3af;background:none;border:none;cursor:pointer">Fermer</button>
+                    </div>`;
+                overlay.dataset.overlay = '1';
+                overlay.addEventListener('click', e => { if (e.target === overlay) overlay.remove(); });
+                document.body.appendChild(overlay);
             }
 
             // Like toggle
