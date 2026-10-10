@@ -17,37 +17,41 @@
         <thead class="bg-gray-50 border-b border-gray-100">
             <tr>
                 <th class="text-left px-5 py-3 font-semibold text-gray-500">Titre</th>
-                <th class="text-left px-4 py-3 font-semibold text-gray-500">Catégories</th>
-                <th class="text-left px-4 py-3 font-semibold text-gray-500">Statut</th>
-                <th class="text-left px-4 py-3 font-semibold text-gray-500">Vues</th>
-                <th class="text-left px-4 py-3 font-semibold text-gray-500">Date</th>
+                <th class="text-left px-4 py-3 font-semibold text-gray-500 hidden md:table-cell">Catégories</th>
+                <th class="text-left px-4 py-3 font-semibold text-gray-500 hidden sm:table-cell">Statut</th>
+                <th class="text-left px-4 py-3 font-semibold text-gray-500 hidden lg:table-cell">Vues</th>
+                <th class="text-left px-4 py-3 font-semibold text-gray-500 hidden lg:table-cell">Date</th>
                 <th class="px-4 py-3"></th>
             </tr>
         </thead>
         <tbody class="divide-y divide-gray-50">
         @foreach($articles as $a)
         <tr class="hover:bg-gray-50/50 article-row">
-            <td class="px-5 py-3 font-medium max-w-xs">
-                <p class="truncate">{{ $a->title }}</p>
-                <p class="text-xs text-gray-400 truncate">{{ $a->slug }}</p>
+            <td class="px-5 py-3 font-medium">
+                <p class="truncate max-w-[180px] sm:max-w-xs">{{ $a->title }}</p>
+                <p class="text-xs text-gray-400 truncate max-w-[180px] sm:max-w-xs">{{ $a->slug }}</p>
+                {{-- Mobile: show status badge inline --}}
+                <span class="sm:hidden mt-1 inline-block text-xs px-2 py-0.5 rounded-full font-semibold {{ $a->status==='published' ? 'bg-green-100 text-green-700' : 'bg-yellow-100 text-yellow-700' }}">
+                    {{ $a->status==='published' ? 'Publié' : 'Brouillon' }}
+                </span>
             </td>
-            <td class="px-4 py-3">
+            <td class="px-4 py-3 hidden md:table-cell">
                 <div class="flex flex-wrap gap-1">
                 @foreach($a->categories as $cat)
                     <span class="text-xs px-2 py-0.5 rounded-full bg-teal-50 text-teal-700 font-medium">{{ $cat->name }}</span>
                 @endforeach
                 </div>
             </td>
-            <td class="px-4 py-3">
+            <td class="px-4 py-3 hidden sm:table-cell">
                 <span class="text-xs px-2 py-0.5 rounded-full font-semibold {{ $a->status==='published' ? 'bg-green-100 text-green-700' : 'bg-yellow-100 text-yellow-700' }}">
                     {{ $a->status==='published' ? 'Publié' : 'Brouillon' }}
                 </span>
                 @if($a->newsletter_sent)
-                    <span class="text-xs px-2 py-0.5 rounded-full bg-blue-100 text-blue-700 font-semibold ml-1">📨 Envoyé</span>
+                    <span class="text-xs px-2 py-0.5 rounded-full bg-blue-100 text-blue-700 font-semibold ml-1">📨</span>
                 @endif
             </td>
-            <td class="px-4 py-3 text-gray-500">{{ number_format($a->views) }}</td>
-            <td class="px-4 py-3 text-gray-400 text-xs">{{ $a->created_at->format('d/m/Y') }}</td>
+            <td class="px-4 py-3 text-gray-500 hidden lg:table-cell">{{ number_format($a->views) }}</td>
+            <td class="px-4 py-3 text-gray-400 text-xs hidden lg:table-cell">{{ $a->created_at->format('d/m/Y') }}</td>
             <td class="px-4 py-3">
                 <div class="flex items-center gap-1 justify-end">
                     @if($a->status==='draft')

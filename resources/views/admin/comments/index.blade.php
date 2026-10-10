@@ -53,13 +53,13 @@
                 </div>
                 <div class="flex gap-2 shrink-0">
                     <button onclick="toggleApprove({{ $comment->id }}, this)"
-                        class="approve-btn px-3 py-1.5 rounded-lg text-xs font-semibold transition inline-flex items-center gap-1
+                        class="approve-btn h-8 px-2 sm:px-3 rounded-lg text-xs font-semibold transition inline-flex items-center gap-1
                         {{ !$comment->approved ? 'bg-emerald-50 text-emerald-700 hover:bg-emerald-100' : 'bg-gray-100 text-gray-600 hover:bg-gray-200' }}">
-                        <i data-lucide="{{ !$comment->approved ? 'check' : 'eye-off' }}" class="h-3 w-3"></i>
-                        {{ !$comment->approved ? 'Approuver' : 'Desapprouver' }}
+                        <i data-lucide="{{ !$comment->approved ? 'check' : 'eye-off' }}" class="h-3 w-3 shrink-0"></i>
+                        <span class="hidden sm:inline">{{ !$comment->approved ? 'Approuver' : 'Désapprouver' }}</span>
                     </button>
                     <button onclick="deleteComment({{ $comment->id }}, this)"
-                        class="px-3 py-1.5 rounded-lg bg-red-50 text-red-600 text-xs font-semibold hover:bg-red-100 transition inline-flex items-center gap-1">
+                        class="h-8 w-8 rounded-lg bg-red-50 text-red-600 text-xs font-semibold hover:bg-red-100 transition inline-flex items-center justify-center">
                         <i data-lucide="trash-2" class="h-3 w-3"></i>
                     </button>
                 </div>
