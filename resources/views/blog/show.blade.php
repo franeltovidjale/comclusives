@@ -535,6 +535,14 @@ if (typeof lucide !== 'undefined') lucide.createIcons();
             return div;
         }
 
+        function setLiked(likeBtn) {
+            likeBtn.dataset.liked = 'true';
+            const icon = likeBtn.querySelector('.like-icon');
+            icon.style.fill = '#0d9488';
+            icon.style.stroke = '#0d9488';
+            likeBtn.classList.add('text-primary');
+        }
+
         function wireComment(div) {
             const likeBtn = div.querySelector('.like-btn');
             const dislikeBtn = div.querySelector('.dislike-btn');
@@ -546,11 +554,15 @@ if (typeof lucide !== 'undefined') lucide.createIcons();
             const replyName = div.querySelector('.reply-name');
             const repliesDiv = div.querySelector('.replies');
 
-            // Like toggle (persisté en base)
+            // Restaurer l'état liked depuis localStorage
+            const commentId = div.dataset.commentId;
+            if (commentId && localStorage.getItem('liked_' + commentId)) {
+                setLiked(likeBtn);
+            }
+
+            // Like toggle
             likeBtn.addEventListener('click', async function() {
-                const liked = this.dataset.liked === 'true';
-                if (liked) return; // un seul like par session
-                const commentId = div.dataset.commentId;
+                if (this.dataset.liked === 'true') return;
                 if (!commentId) return;
                 try {
                     const res = await fetch(`/comments/${commentId}/like`, {
@@ -558,12 +570,10 @@ if (typeof lucide !== 'undefined') lucide.createIcons();
                         headers: { 'X-CSRF-TOKEN': CSRF_TOKEN, 'Accept': 'application/json' }
                     });
                     const json = await res.json();
+                    if (json.already) return;
+                    localStorage.setItem('liked_' + commentId, '1');
+                    setLiked(this);
                     this.dataset.count = json.likes;
-                    this.dataset.liked = 'true';
-                    const icon = this.querySelector('.like-icon');
-                    icon.style.fill = '#0d9488';
-                    icon.style.stroke = '#0d9488';
-                    this.classList.add('text-primary');
                     this.querySelector('.like-count').textContent = json.likes || '';
                 } catch(e) {}
             });
