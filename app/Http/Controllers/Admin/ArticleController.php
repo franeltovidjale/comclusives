@@ -31,6 +31,7 @@ class ArticleController extends Controller
         $data = $this->validateArticle($request);
         $data['user_id'] = auth()->id();
         $data['cover_image'] = $this->handleImage($request);
+        $data['content'] = $this->extractBase64Images($data['content']);
         if (($data['status'] ?? null) === 'published' && empty($data['published_at'])) {
             $data['published_at'] = now();
         }
@@ -62,6 +63,7 @@ class ArticleController extends Controller
             $data['published_at'] = now();
         }
 
+        $data['content'] = $this->extractBase64Images($data['content']);
         $article->update($data);
         $article->categories()->sync($request->input('categories', []));
 
@@ -170,5 +172,23 @@ class ArticleController extends Controller
 
         imagedestroy($orig);
         imagedestroy($thumb);
+    }
+
+    private function extractBase64Images(string $content): string
+    {
+        return preg_replace_callback(
+            '/src="data:image\/(png|jpeg|jpg|gif|webp);base64,([^"]+)"/i',
+            function ($m) {
+                $ext  = strtolower($m[1] === 'jpeg' ? 'jpg' : $m[1]);
+                $data = base64_decode($m[2]);
+                if (!$data) return 'src=""';
+                $name = Str::uuid() . '.' . $ext;
+                $dir  = public_path('uploads/articles');
+                File::ensureDirectoryExists($dir);
+                file_put_contents($dir . '/' . $name, $data);
+                return 'src="/uploads/articles/' . $name . '"';
+            },
+            $content
+        );
     }
 }
