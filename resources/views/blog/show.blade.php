@@ -768,15 +768,15 @@ if (typeof lucide !== 'undefined') lucide.createIcons();
         const commentsList = document.getElementById('commentsList');
         COMMENTS.forEach(d => commentsList.appendChild(buildComment(d)));
 
-        // Nouveau commentaire principal
+        // Nouveau commentaire principal (seulement si l'utilisateur est connecté)
         const commentInput = document.getElementById('commentInput');
         const commentNameInput = document.getElementById('commentNameInput');
         const commentActions = document.getElementById('commentActions');
         const submitComment = document.getElementById('submitComment');
         const cancelComment = document.getElementById('cancelComment');
-
         const commentEmailInput = document.getElementById('commentEmailInput');
 
+        if (commentInput) {
         // Restore pending comment after login/register
         const restoredComment = sessionStorage.getItem('pendingComment');
         if (restoredComment) {
@@ -917,7 +917,7 @@ if (typeof lucide !== 'undefined') lucide.createIcons();
         commentInput.addEventListener('keydown', function(e) {
             if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); if (!submitComment.disabled) document.getElementById('commentForm').requestSubmit(); }
         });
-
+        } // end if (commentInput)
 
         // shareArticleTitle already rendered server-side
 
