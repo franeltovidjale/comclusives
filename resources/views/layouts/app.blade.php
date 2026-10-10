@@ -19,6 +19,7 @@
     <meta property="og:title" content="@yield('og_title', 'Comclusives') – Communication inclusive">
     <meta property="og:description" content="@yield('description', 'Comclusives favorise la communication inclusive, la diversité et l\'égalité des chances.')">
     <meta property="og:image" content="@yield('og_image', asset('images/og-image.jpg'))">
+    <meta property="og:image:alt" content="@yield('og_title', 'Comclusives') – Communication inclusive">
     <meta property="og:image:type" content="image/jpeg">
     <meta property="og:image:width" content="1200">
     <meta property="og:image:height" content="630">
