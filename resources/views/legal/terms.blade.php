@@ -1,64 +1,74 @@
 @extends('layouts.app')
-
-@section('title', 'Conditions d\'utilisation – Comclusives')
-@section('meta_description', 'Conditions d\'utilisation du site Comclusives.')
+@section('title', "Conditions d'utilisation – Comclusives")
 
 @section('content')
-<div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 mt-20 py-16">
+<div class="healing-gradient pt-32 pb-16 text-white text-center px-4">
+    <p class="text-sm font-semibold uppercase tracking-widest mb-3" style="color:#a7f3d0">Légal</p>
+    <h1 class="text-4xl sm:text-5xl font-bold mb-3">Conditions d'utilisation</h1>
+    <p style="color:#a7f3d0" class="text-sm">Dernière mise à jour : octobre 2025</p>
+</div>
 
-    <div style="height:4px;width:48px;background:#0d9488;border-radius:2px;margin-bottom:32px;"></div>
-    <h1 class="text-4xl font-bold mb-2">Conditions d'utilisation</h1>
-    <p class="text-gray-400 text-sm mb-12">Dernière mise à jour : octobre 2025</p>
-
-    <div class="prose prose-gray max-w-none space-y-10 text-gray-700 leading-relaxed">
-
-        <section>
-            <h2 class="text-xl font-bold text-gray-900 mb-3">1. Acceptation des conditions</h2>
-            <p>En accédant et en utilisant le site Comclusives, vous acceptez sans réserve les présentes conditions d'utilisation. Si vous n'acceptez pas ces conditions, veuillez ne pas utiliser ce site.</p>
-        </section>
-
-        <section>
-            <h2 class="text-xl font-bold text-gray-900 mb-3">2. Accès au site</h2>
-            <p>Comclusives est accessible gratuitement à tout utilisateur disposant d'un accès à internet. Tous les frais liés à l'accès (connexion internet, matériel) restent à votre charge. Nous nous réservons le droit de modifier, suspendre ou interrompre l'accès au site à tout moment.</p>
-        </section>
-
-        <section>
-            <h2 class="text-xl font-bold text-gray-900 mb-3">3. Commentaires</h2>
-            <p>Les commentaires publiés sur Comclusives sont soumis aux règles suivantes :</p>
-            <ul class="list-disc pl-6 space-y-2 mt-3">
-                <li>Ils doivent être respectueux, constructifs et en rapport avec le sujet de l'article.</li>
-                <li>Sont strictement interdits : les propos haineux, discriminatoires, injurieux, diffamatoires, ou contraires aux lois en vigueur.</li>
-                <li>Sont interdits : le spam, la publicité non sollicitée et les liens malveillants.</li>
+<div class="max-w-2xl mx-auto px-4 sm:px-6 py-16">
+    @php
+    $sections = [
+        ['num'=>'01', 'title'=>'Acceptation des conditions', 'content'=>'
+            <p>En accédant et en utilisant le site Comclusives, vous acceptez sans réserve les présentes conditions. Si vous ne les acceptez pas, veuillez ne pas utiliser ce site.</p>
+        '],
+        ['num'=>'02', 'title'=>'Accès au site', 'content'=>'
+            <p>Comclusives est accessible gratuitement à tout utilisateur disposant d\'un accès à internet. Nous nous réservons le droit de modifier, suspendre ou interrompre l\'accès au site à tout moment.</p>
+        '],
+        ['num'=>'03', 'title'=>'Commentaires', 'content'=>'
+            <p class="mb-3">Les commentaires publiés sont soumis aux règles suivantes :</p>
+            <ul>
+                <li>Respectueux, constructifs et en rapport avec l\'article.</li>
+                <li>Interdits : propos haineux, discriminatoires, injurieux, diffamatoires.</li>
+                <li>Interdits : spam, publicité non sollicitée, liens malveillants.</li>
                 <li>Tout commentaire est soumis à modération avant publication.</li>
             </ul>
-            <p class="mt-3">Comclusives se réserve le droit de supprimer tout commentaire sans préavis si celui-ci ne respecte pas ces règles.</p>
-        </section>
+            <p class="mt-3">Comclusives se réserve le droit de supprimer tout commentaire sans préavis.</p>
+        '],
+        ['num'=>'04', 'title'=>'Newsletter', 'content'=>'
+            <p>En vous inscrivant, vous acceptez de recevoir nos emails. Vous pouvez vous désabonner à tout moment via le lien en bas de chaque email. Votre adresse ne sera jamais partagée avec des tiers.</p>
+        '],
+        ['num'=>'05', 'title'=>'Contenu du site', 'content'=>'
+            <p>Les articles reflètent les opinions de leurs auteurs et ont pour vocation d\'informer. Ils ne constituent pas des conseils professionnels. Comclusives décline toute responsabilité quant à l\'usage fait des informations publiées.</p>
+        '],
+        ['num'=>'06', 'title'=>'Propriété intellectuelle', 'content'=>'
+            <p>Tout le contenu du site (textes, images, design) est protégé par le droit d\'auteur. Toute reproduction sans autorisation écrite préalable est interdite.</p>
+        '],
+        ['num'=>'07', 'title'=>'Modification des conditions', 'content'=>'
+            <p>Comclusives se réserve le droit de modifier ces conditions à tout moment. Les modifications prennent effet dès leur publication.</p>
+        '],
+        ['num'=>'08', 'title'=>'Contact', 'content'=>'
+            <p>Pour toute question : <a href="mailto:contact@comclusives.com" class="text-primary hover:underline font-medium">contact@comclusives.com</a></p>
+        '],
+    ];
+    @endphp
 
-        <section>
-            <h2 class="text-xl font-bold text-gray-900 mb-3">4. Newsletter</h2>
-            <p>En vous inscrivant à la newsletter, vous acceptez de recevoir des emails de Comclusives concernant nos nouveaux articles. Vous pouvez vous désabonner à tout moment via le lien présent dans chaque email. Votre adresse email ne sera jamais partagée avec des tiers.</p>
-        </section>
-
-        <section>
-            <h2 class="text-xl font-bold text-gray-900 mb-3">5. Contenu du site</h2>
-            <p>Les articles publiés sur Comclusives reflètent les opinions de leurs auteurs et ont pour vocation d'informer et de sensibiliser. Ils ne constituent pas des conseils professionnels (juridiques, médicaux, etc.). Comclusives décline toute responsabilité quant à l'usage qui pourrait être fait des informations publiées.</p>
-        </section>
-
-        <section>
-            <h2 class="text-xl font-bold text-gray-900 mb-3">6. Propriété intellectuelle</h2>
-            <p>Tout le contenu du site (textes, images, design) est protégé par le droit d'auteur. Toute reproduction ou utilisation sans autorisation écrite préalable est interdite.</p>
-        </section>
-
-        <section>
-            <h2 class="text-xl font-bold text-gray-900 mb-3">7. Modification des conditions</h2>
-            <p>Comclusives se réserve le droit de modifier ces conditions à tout moment. Les modifications prennent effet dès leur publication sur cette page. Il vous appartient de consulter régulièrement cette page.</p>
-        </section>
-
-        <section>
-            <h2 class="text-xl font-bold text-gray-900 mb-3">8. Contact</h2>
-            <p>Pour toute question relative aux présentes conditions : <a href="mailto:contact@comclusives.com" class="text-primary hover:underline">contact@comclusives.com</a></p>
-        </section>
-
+    <div class="space-y-8">
+        @foreach($sections as $s)
+        <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-6 sm:p-8">
+            <div class="flex items-start gap-4">
+                <span class="text-xs font-bold text-primary bg-primary/10 rounded-xl px-2.5 py-1 shrink-0 mt-0.5">{{ $s['num'] }}</span>
+                <div class="flex-1 min-w-0">
+                    <h2 class="text-lg font-bold text-gray-900 mb-3">{{ $s['title'] }}</h2>
+                    <div class="text-gray-600 text-sm leading-relaxed space-y-2 legal-content">
+                        {!! $s['content'] !!}
+                    </div>
+                </div>
+            </div>
+        </div>
+        @endforeach
+    </div>
+    <div class="mt-10 text-center">
+        <a href="{{ route('home') }}" class="text-sm text-gray-400 hover:text-primary transition">Retour à l'accueil</a>
     </div>
 </div>
+
+<style>
+.legal-content ul { list-style: none; padding: 0; }
+.legal-content ul li { padding: 6px 0 6px 20px; position: relative; border-bottom: 1px solid #f3f4f6; }
+.legal-content ul li:last-child { border-bottom: none; }
+.legal-content ul li::before { content: ''; position: absolute; left: 0; top: 50%; transform: translateY(-50%); width: 6px; height: 6px; border-radius: 50%; background: #0d9488; }
+</style>
 @endsection

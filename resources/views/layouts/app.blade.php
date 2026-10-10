@@ -121,5 +121,39 @@
             window.addEventListener('load', () => navigator.serviceWorker.register('/sw.js'));
         }
     </script>
+
+{{-- Cookie Banner --}}
+@if(!request()->routeIs('privacy'))
+<div id="cookieBanner" style="display:none;position:fixed;bottom:24px;left:50%;transform:translateX(-50%);z-index:9999;width:calc(100% - 32px);max-width:560px;">
+    <div style="background:#0f1923;border-radius:16px;padding:20px 24px;display:flex;flex-wrap:wrap;align-items:center;gap:16px;box-shadow:0 20px 60px rgba(0,0,0,0.3);">
+        <div style="flex:1;min-width:200px;">
+            <p style="margin:0 0 4px;font-size:14px;font-weight:700;color:#ffffff;">Cookies</p>
+            <p style="margin:0;font-size:12px;color:#9ca3af;line-height:1.5;">
+                Nous utilisons des cookies techniques essentiels au fonctionnement du site.
+                <a href="{{ route('privacy') }}" style="color:#0d9488;text-decoration:underline;">En savoir plus</a>
+            </p>
+        </div>
+        <div style="display:flex;gap:10px;shrink:0;">
+            <button onclick="acceptCookies()" style="padding:10px 20px;background:#0d9488;color:#fff;border:none;border-radius:50px;font-size:13px;font-weight:600;cursor:pointer;">Accepter</button>
+            <button onclick="declineCookies()" style="padding:10px 20px;background:rgba(255,255,255,0.1);color:#9ca3af;border:none;border-radius:50px;font-size:13px;font-weight:600;cursor:pointer;">Refuser</button>
+        </div>
+    </div>
+</div>
+<script>
+(function() {
+    if (!localStorage.getItem('cookie_consent')) {
+        setTimeout(() => { document.getElementById('cookieBanner').style.display = 'block'; }, 1500);
+    }
+})();
+function acceptCookies() {
+    localStorage.setItem('cookie_consent', 'accepted');
+    document.getElementById('cookieBanner').style.display = 'none';
+}
+function declineCookies() {
+    localStorage.setItem('cookie_consent', 'declined');
+    document.getElementById('cookieBanner').style.display = 'none';
+}
+</script>
+@endif
 </body>
 </html>
