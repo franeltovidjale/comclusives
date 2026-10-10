@@ -979,10 +979,10 @@ if (typeof lucide !== 'undefined') lucide.createIcons();
             submitComment.textContent = 'Commenter';
             submitComment.disabled = false;
         }
-        document.getElementById('otpCancelBtn').addEventListener('click', closeOtpModal);
-        document.getElementById('otpOverlay').addEventListener('click', closeOtpModal);
+        document.getElementById('otpCancelBtn')?.addEventListener('click', closeOtpModal);
+        document.getElementById('otpOverlay')?.addEventListener('click', closeOtpModal);
 
-        document.getElementById('otpResendBtn').addEventListener('click', async () => {
+        document.getElementById('otpResendBtn')?.addEventListener('click', async () => {
             if (!pendingComment) return;
             const btn = document.getElementById('otpResendBtn');
             btn.textContent = 'Envoi…'; btn.disabled = true;
@@ -994,7 +994,7 @@ if (typeof lucide !== 'undefined') lucide.createIcons();
             btn.textContent = 'Code renvoyé'; setTimeout(() => { btn.textContent = 'Renvoyer le code'; btn.disabled = false; }, 3000);
         });
 
-        document.getElementById('otpVerifyBtn').addEventListener('click', async () => {
+        document.getElementById('otpVerifyBtn')?.addEventListener('click', async () => {
             const code = document.getElementById('otpInput').value.trim();
             if (code.length !== 6) return;
             const btn = document.getElementById('otpVerifyBtn');
@@ -1026,8 +1026,8 @@ if (typeof lucide !== 'undefined') lucide.createIcons();
             }
         });
 
-        document.getElementById('otpInput').addEventListener('keydown', function(e) {
-            if (e.key === 'Enter') document.getElementById('otpVerifyBtn').click();
+        document.getElementById('otpInput')?.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter') document.getElementById('otpVerifyBtn')?.click();
         });
 
         // === MODAL PARTAGE ===
