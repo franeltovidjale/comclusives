@@ -452,16 +452,7 @@ function closeShareModal() {
     if (m) { m.classList.add('hidden'); m.classList.remove('flex'); document.body.style.overflow=''; }
 }
 function handleShare() {
-    var title = '{{ addslashes($article->title) }}';
-    var url = window.location.href;
-    var text = '{{ addslashes(Str::limit(strip_tags($article->excerpt ?? ''), 100)) }}';
-    if (navigator.share) {
-        navigator.share({ title: title, text: text, url: url }).catch(function(e) {
-            if (e.name !== 'AbortError') openShareModal();
-        });
-    } else {
-        openShareModal();
-    }
+    openShareModal();
 }
 </script>
 
