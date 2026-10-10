@@ -42,7 +42,7 @@
             <form method="POST" action="{{ route('admin.categories.destroy', $cat) }}"
                   onsubmit="event.preventDefault(); confirmDelete(this, '{{ addslashes($cat->name) }}')">
                 @csrf @method('DELETE')
-                <button type="submit" class="text-xs text-red-400 hover:text-red-600 transition">Supprimer</button>
+                <button type="submit" style="font-size:.75rem;color:#f87171;background:none;border:none;cursor:pointer;padding:0">Supprimer</button>
             </form>
         </div>
         @empty
