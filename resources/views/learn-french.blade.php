@@ -84,12 +84,12 @@
                     <div class="card-treatment hover:-translate-y-1 hover:shadow-soft" data-aos="fade-up" data-aos-delay="0">
                         <h3 class="font-semibold text-lg mb-2">Stop aux fautes ! 10 expressions mal utilisées</h3>
                         <p class="text-sm text-muted-foreground mb-4">Un tour d'horizon des expressions courantes qui trahissent des confusions linguistiques.</p>
-                        <a href="../stop-aux-fautes-10-expressions-mal-utilisees/index.html" class="inline-flex items-center gap-1 text-sm font-semibold text-primary">Lire l'article <i data-lucide="arrow-right" class="h-3.5 w-3.5"></i></a>
+                        <a href="{{ route('blog.show', 'stop-aux-fautes-10-expressions-mal-utilisees') }}" class="inline-flex items-center gap-1 text-sm font-semibold text-primary">Lire l'article <i data-lucide="arrow-right" class="h-3.5 w-3.5"></i></a>
                     </div>
                     <div class="card-treatment hover:-translate-y-1 hover:shadow-soft" data-aos="fade-up" data-aos-delay="80">
                         <h3 class="font-semibold text-lg mb-2">Maïeuticien : le masculin (un peu oublié) de sage-femme</h3>
                         <p class="text-sm text-muted-foreground mb-4">Quand le genre grammatical révèle nos angles morts sur les professions.</p>
-                        <a href="../maieuticien-le-masculin-un-peu-oublie-de-sage-femme/index.html" class="inline-flex items-center gap-1 text-sm font-semibold text-primary">Lire l'article <i data-lucide="arrow-right" class="h-3.5 w-3.5"></i></a>
+                        <a href="{{ route('blog.show', 'maieuticien-le-masculin-un-peu-oublie-de-sage-femme') }}" class="inline-flex items-center gap-1 text-sm font-semibold text-primary">Lire l'article <i data-lucide="arrow-right" class="h-3.5 w-3.5"></i></a>
                     </div>
                 </div>
             </div>
@@ -103,7 +103,7 @@
                     <div class="relative">
                         <h2 class="text-3xl md:text-4xl font-bold mb-4">Des cours de français inclusifs et accessibles</h2>
                         <p class="opacity-90 max-w-xl mx-auto mb-8">Vous souhaitez des cours personnalisés ou du contenu sur mesure pour votre structure ? Contactez-nous.</p>
-                        <a class='inline-flex items-center gap-2 px-7 py-3.5 rounded-full bg-white text-primary font-semibold hover:scale-105 transition' href='../contact/index.html'>Nous contacter <i data-lucide="arrow-right" class="h-4 w-4"></i></a>
+                        <a class='inline-flex items-center gap-2 px-7 py-3.5 rounded-full bg-white text-primary font-semibold hover:scale-105 transition' href="{{ route('contact') }}">Nous contacter <i data-lucide="arrow-right" class="h-4 w-4"></i></a>
                     </div>
                 </div>
             </div>

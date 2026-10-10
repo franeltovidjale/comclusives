@@ -199,7 +199,7 @@
                         <div class="p-6">
                             <span class="px-2 py-0.5 rounded-full bg-soft text-primary text-xs font-semibold">Éducation</span>
                             <h3 class="font-bold text-base mt-3 mb-2 leading-snug">Les armes de ma mère : de la punition d'hier à l'éducation d'aujourd'hui</h3>
-                            <a href="../les-armes-de-ma-mere-de-la-punition-dhier-a-leducation-daujourdhui/index.html" class="inline-flex items-center gap-1 text-sm font-semibold text-primary">Lire <i data-lucide="arrow-right" class="h-3.5 w-3.5"></i></a>
+                            <a href="{{ route('blog.show', 'les-armes-de-ma-mere-de-la-punition-dhier-a-leducation-daujourdhui') }}" class="inline-flex items-center gap-1 text-sm font-semibold text-primary">Lire <i data-lucide="arrow-right" class="h-3.5 w-3.5"></i></a>
                         </div>
                     </div>
                     <div class="card-treatment hover:-translate-y-1 hover:shadow-soft overflow-hidden p-0" data-aos="fade-up" data-aos-delay="80">
@@ -207,7 +207,7 @@
                         <div class="p-6">
                             <span class="px-2 py-0.5 rounded-full bg-soft text-primary text-xs font-semibold">Communication inclusive</span>
                             <h3 class="font-bold text-base mt-3 mb-2 leading-snug">Stop aux fautes ! 10 expressions mal utilisées</h3>
-                            <a href="../stop-aux-fautes-10-expressions-mal-utilisees/index.html" class="inline-flex items-center gap-1 text-sm font-semibold text-primary">Lire <i data-lucide="arrow-right" class="h-3.5 w-3.5"></i></a>
+                            <a href="{{ route('blog.show', 'stop-aux-fautes-10-expressions-mal-utilisees') }}" class="inline-flex items-center gap-1 text-sm font-semibold text-primary">Lire <i data-lucide="arrow-right" class="h-3.5 w-3.5"></i></a>
                         </div>
                     </div>
                     <div class="card-treatment hover:-translate-y-1 hover:shadow-soft overflow-hidden p-0" data-aos="fade-up" data-aos-delay="160">
@@ -215,7 +215,7 @@
                         <div class="p-6">
                             <span class="px-2 py-0.5 rounded-full bg-soft text-primary text-xs font-semibold">Égalité</span>
                             <h3 class="font-bold text-base mt-3 mb-2 leading-snug">Des affiches qui séduisent... mais qui excluent</h3>
-                            <a href="../des-affiches-qui-seduisent-mais-qui-excluent/index.html" class="inline-flex items-center gap-1 text-sm font-semibold text-primary">Lire <i data-lucide="arrow-right" class="h-3.5 w-3.5"></i></a>
+                            <a href="{{ route('blog.show', 'des-affiches-qui-seduisent-mais-qui-excluent') }}" class="inline-flex items-center gap-1 text-sm font-semibold text-primary">Lire <i data-lucide="arrow-right" class="h-3.5 w-3.5"></i></a>
                         </div>
                     </div>
                 </div>
@@ -231,7 +231,7 @@
                         <h2 class="text-4xl md:text-5xl font-bold max-w-2xl mx-auto leading-tight">Vous voulez collaborer avec nous ?</h2>
                         <p class="mt-5 opacity-90 max-w-xl mx-auto">Un projet, un partenariat, une idée à partager ? Nous sommes là pour en discuter.</p>
                         <div class="flex flex-wrap justify-center gap-3 mt-8">
-                            <a class='inline-flex items-center gap-2 px-7 py-3.5 rounded-full bg-white text-primary font-semibold hover:scale-105 transition' href='../contact/index.html'>Nous contacter <i data-lucide="arrow-right" class="h-4 w-4"></i></a>
+                            <a class='inline-flex items-center gap-2 px-7 py-3.5 rounded-full bg-white text-primary font-semibold hover:scale-105 transition' href="{{ route('contact') }}">Nous contacter <i data-lucide="arrow-right" class="h-4 w-4"></i></a>
                             <a href="{{ route('blog.index') }}" class="inline-flex items-center gap-2 px-7 py-3.5 rounded-full border border-white/40 hover:bg-white/10 font-semibold transition"><i data-lucide="book-open" class="h-4 w-4"></i> Lire le blog</a>
                         </div>
                     </div>

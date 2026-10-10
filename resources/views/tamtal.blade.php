@@ -14,8 +14,8 @@
                     Cet espace est en cours de construction. Tamtal sera dédié à la langue, la culture locale et aux ressources pour valoriser la diversité linguistique. Revenez bientôt !
                 </p>
                 <div class="flex flex-wrap justify-center gap-4">
-                    <a class='btn-primary' href='../blog/index.html'>Lire le blog en attendant</a>
-                    <a class='btn-outline' href='../contact/index.html'>Nous contacter</a>
+                    <a class='btn-primary' href="{{ route('blog.index') }}">Lire le blog en attendant</a>
+                    <a class='btn-outline' href="{{ route('contact') }}">Nous contacter</a>
                 </div>
             </div>
         </section>
