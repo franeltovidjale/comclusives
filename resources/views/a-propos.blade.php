@@ -195,7 +195,7 @@
                 </div>
                 <div class="grid md:grid-cols-3 gap-6">
                     <div class="card-treatment hover:-translate-y-1 hover:shadow-soft overflow-hidden p-0" data-aos="fade-up" data-aos-delay="0">
-                        <img src="{{ asset('images/Nouveau-projet-1.png') }}" alt="Les armes de ma mère" class="w-full h-48 object-cover" onerror="this.src='https://comclusives.com/wp-content/uploads/2025/11/Nouveau-projet-1.png'" />
+                        <img src="{{ asset('images/Nouveau-projet-1.png') }}" alt="Les armes de ma mère" class="w-full h-48 object-cover" loading="lazy" onerror="this.src='https://comclusives.com/wp-content/uploads/2025/11/Nouveau-projet-1.png'" />
                         <div class="p-6">
                             <span class="px-2 py-0.5 rounded-full bg-soft text-primary text-xs font-semibold">Éducation</span>
                             <h3 class="font-bold text-base mt-3 mb-2 leading-snug">Les armes de ma mère : de la punition d'hier à l'éducation d'aujourd'hui</h3>
@@ -203,7 +203,7 @@
                         </div>
                     </div>
                     <div class="card-treatment hover:-translate-y-1 hover:shadow-soft overflow-hidden p-0" data-aos="fade-up" data-aos-delay="80">
-                        <img src="{{ asset('images/Nouveau-projet-2.png') }}" alt="Stop aux fautes" class="w-full h-48 object-cover" onerror="this.src='https://comclusives.com/wp-content/uploads/2025/11/Nouveau-projet-2.png'" />
+                        <img src="{{ asset('images/Nouveau-projet-2.png') }}" alt="Stop aux fautes" class="w-full h-48 object-cover" loading="lazy" onerror="this.src='https://comclusives.com/wp-content/uploads/2025/11/Nouveau-projet-2.png'" />
                         <div class="p-6">
                             <span class="px-2 py-0.5 rounded-full bg-soft text-primary text-xs font-semibold">Communication inclusive</span>
                             <h3 class="font-bold text-base mt-3 mb-2 leading-snug">Stop aux fautes ! 10 expressions mal utilisées</h3>
@@ -211,7 +211,7 @@
                         </div>
                     </div>
                     <div class="card-treatment hover:-translate-y-1 hover:shadow-soft overflow-hidden p-0" data-aos="fade-up" data-aos-delay="160">
-                        <img src="{{ asset('images/New-Project-5.png') }}" alt="Des affiches qui excluent" class="w-full h-48 object-cover" onerror="this.src='https://comclusives.com/wp-content/uploads/2025/09/New-Project-5.png'" />
+                        <img src="{{ asset('images/New-Project-5.png') }}" alt="Des affiches qui excluent" class="w-full h-48 object-cover" loading="lazy" onerror="this.src='https://comclusives.com/wp-content/uploads/2025/09/New-Project-5.png'" />
                         <div class="p-6">
                             <span class="px-2 py-0.5 rounded-full bg-soft text-primary text-xs font-semibold">Égalité</span>
                             <h3 class="font-bold text-base mt-3 mb-2 leading-snug">Des affiches qui séduisent... mais qui excluent</h3>

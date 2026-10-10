@@ -225,7 +225,7 @@
                     <a href="{{ route('blog.show', $prev->slug) }}"
                        class="flex-1 flex items-center gap-3 p-4 rounded-2xl border border-gray-100 hover:border-primary hover:shadow-sm transition group">
                         @if($prev->cover_url)
-                        <img src="{{ $prev->cover_url }}" class="h-14 w-14 rounded-xl object-cover shrink-0" alt="">
+                        <img src="{{ $prev->cover_url }}" class="h-14 w-14 rounded-xl object-cover shrink-0" alt="" loading="lazy">
                         @endif
                         <div class="min-w-0">
                             <p class="text-xs text-gray-400 mb-1 flex items-center gap-1"><i data-lucide="arrow-left" class="h-3 w-3"></i> Article précédent</p>
@@ -241,7 +241,7 @@
                             <p class="text-sm font-semibold text-gray-800 group-hover:text-primary transition line-clamp-2">{{ $next->title }}</p>
                         </div>
                         @if($next->cover_url)
-                        <img src="{{ $next->cover_url }}" class="h-14 w-14 rounded-xl object-cover shrink-0" alt="">
+                        <img src="{{ $next->cover_url }}" class="h-14 w-14 rounded-xl object-cover shrink-0" alt="" loading="lazy">
                         @endif
                     </a>
                     @endif
@@ -292,7 +292,7 @@
                     <div class="rounded-2xl overflow-hidden border border-gray-100">
                         @if($featured->cover_url)
                         <div class="relative h-48 overflow-hidden">
-                            <img src="{{ $featured->cover_url }}" alt="" class="w-full h-full object-cover">
+                            <img src="{{ $featured->cover_url }}" alt="" class="w-full h-full object-cover" loading="lazy">
                             <div class="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent"></div>
                             <div class="absolute bottom-0 left-0 right-0 p-4">
                                 @foreach($featured->categories->take(1) as $c)
@@ -317,7 +317,7 @@
                             <a href="{{ route('blog.show', $pop->slug) }}" class="popular-post flex gap-3 group">
                                 @if($pop->cover_url)
                                 <img src="{{ $pop->cover_url }}" alt=""
-                                     class="h-16 w-16 rounded-xl object-cover shrink-0">
+                                     class="h-16 w-16 rounded-xl object-cover shrink-0" loading="lazy">
                                 @else
                                 <div class="h-16 w-16 rounded-xl healing-gradient shrink-0 flex items-center justify-center">
                                     <i data-lucide="image" class="h-5 w-5 text-white/60"></i>
@@ -400,7 +400,7 @@
                 <div class="relative overflow-hidden" style="aspect-ratio:16/9">
                     @if($rel->cover_url)
                     <img src="{{ $rel->cover_url }}" alt="{{ $rel->title }}"
-                         class="w-full h-full object-cover group-hover:scale-105 transition duration-500">
+                         class="w-full h-full object-cover group-hover:scale-105 transition duration-500" loading="lazy">
                     @else
                     <div class="w-full h-full healing-gradient flex items-center justify-center">
                         <i data-lucide="image" class="h-8 w-8 text-white/60"></i>
@@ -438,10 +438,32 @@
 @endif
 
 {{-- Share floating button --}}
-<button id="shareBtn" class="fixed left-6 z-40 flex items-center gap-2 px-5 py-3 rounded-full text-white text-sm font-semibold shadow-lg hover:scale-105 transition-all" style="bottom:max(1.5rem, calc(env(safe-area-inset-bottom, 0px) + 70px));background:linear-gradient(135deg,#0d9488,#6366f1);touch-action:manipulation;-webkit-tap-highlight-color:transparent;cursor:pointer">
+<button id="shareBtn" onclick="handleShare()" class="fixed left-6 z-40 flex items-center gap-2 px-5 py-3 rounded-full text-white text-sm font-semibold shadow-lg hover:scale-105 transition-all" style="bottom:max(1.5rem,env(safe-area-inset-bottom,0px));background:linear-gradient(135deg,#0d9488,#6366f1);touch-action:manipulation;-webkit-tap-highlight-color:transparent;cursor:pointer">
     <svg class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M4 12v8a2 2 0 002 2h12a2 2 0 002-2v-8M16 6l-4-4-4 4M12 2v13"/></svg>
     Partager
 </button>
+<script>
+function openShareModal() {
+    var m = document.getElementById('shareModal');
+    if (m) { m.classList.remove('hidden'); m.classList.add('flex'); document.body.style.overflow='hidden'; }
+}
+function closeShareModal() {
+    var m = document.getElementById('shareModal');
+    if (m) { m.classList.add('hidden'); m.classList.remove('flex'); document.body.style.overflow=''; }
+}
+function handleShare() {
+    var title = '{{ addslashes($article->title) }}';
+    var url = window.location.href;
+    var text = '{{ addslashes(Str::limit(strip_tags($article->excerpt ?? ''), 100)) }}';
+    if (navigator.share) {
+        navigator.share({ title: title, text: text, url: url }).catch(function(e) {
+            if (e.name !== 'AbortError') openShareModal();
+        });
+    } else {
+        openShareModal();
+    }
+}
+</script>
 
 {{-- OTP Modal --}}
 <div id="otpModal" class="fixed inset-0 z-50 hidden items-center justify-center">
@@ -474,7 +496,7 @@
         </div>
         <div class="flex items-center gap-3 p-3 rounded-2xl bg-gray-50 mb-6">
             @if($article->cover_url)
-            <img src="{{ $article->cover_url }}" alt="" class="h-12 w-12 rounded-xl object-cover shrink-0">
+            <img src="{{ $article->cover_url }}" alt="" class="h-12 w-12 rounded-xl object-cover shrink-0" loading="lazy">
             @else
             <div class="h-12 w-12 rounded-xl healing-gradient flex items-center justify-center shrink-0"><i data-lucide="book-open" class="h-5 w-5 text-white"></i></div>
             @endif
@@ -1031,28 +1053,9 @@ if (typeof lucide !== 'undefined') lucide.createIcons();
         });
 
         // === MODAL PARTAGE ===
-        const shareBtn = document.getElementById('shareBtn');
-        const shareModal = document.getElementById('shareModal');
-        const shareOverlay = document.getElementById('shareOverlay');
-        const closeShare = document.getElementById('closeShare');
         const rawUrl = window.location.href;
-        function openShareModal() { shareModal.classList.remove('hidden'); shareModal.classList.add('flex'); document.body.style.overflow='hidden'; }
-        function closeShareModal() { shareModal.classList.add('hidden'); shareModal.classList.remove('flex'); document.body.style.overflow=''; }
-        shareBtn.addEventListener('click', function() {
-            if (typeof navigator.share === 'function') {
-                navigator.share({
-                    title: '{{ addslashes($article->title) }}',
-                    text: '{{ addslashes(Str::limit(strip_tags($article->excerpt ?? ''), 100)) }}',
-                    url: window.location.href
-                }).catch(function(e) {
-                    if (e.name !== 'AbortError') openShareModal();
-                });
-            } else {
-                openShareModal();
-            }
-        });
-        closeShare.addEventListener('click', closeShareModal);
-        shareOverlay.addEventListener('click', closeShareModal);
+        document.getElementById('closeShare')?.addEventListener('click', closeShareModal);
+        document.getElementById('shareOverlay')?.addEventListener('click', closeShareModal);
         const mCopyLink = document.getElementById('mCopyLink');
         if (mCopyLink) mCopyLink.addEventListener('click', () => {
             navigator.clipboard.writeText(rawUrl).then(() => {

@@ -73,7 +73,8 @@
 
     {{-- ── FAVICON ── --}}
     <link rel="icon" type="image/png" href="{{ asset('images/logo-icon.png') }}">
-    <link rel="apple-touch-icon" href="{{ asset('images/logo-icon.png') }}">
+    <link rel="apple-touch-icon" sizes="180x180" href="{{ asset('images/apple-touch-icon.png') }}">
+    <link rel="apple-touch-icon-precomposed" sizes="180x180" href="{{ asset('images/apple-touch-icon.png') }}">
 
     {{-- ── PWA ── --}}
     <link rel="manifest" href="{{ asset('manifest.json') }}">

@@ -90,7 +90,7 @@
             @forelse($recentArticles as $article)
             <div class="flex items-center gap-4 px-6 py-4 hover:bg-gray-50/50 transition">
                 @if($article->cover_image)
-                <img src="{{ $article->cover_url }}" alt="" class="h-12 w-12 rounded-xl object-cover shrink-0">
+                <img src="{{ $article->cover_url }}" alt="" class="h-12 w-12 rounded-xl object-cover shrink-0" loading="lazy">
                 @else
                 <div class="h-12 w-12 rounded-xl healing-gradient flex items-center justify-center shrink-0">
                     <i data-lucide="image" class="h-5 w-5 text-white"></i>

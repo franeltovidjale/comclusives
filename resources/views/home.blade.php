@@ -228,7 +228,7 @@
                 <article class="group bg-white rounded-2xl overflow-hidden border border-gray-100 shadow-sm hover:shadow-md transition" data-aos="fade-up" data-aos-delay="{{ $loop->index * 100 }}">
                     <a href="{{ route('blog.show', $f->slug) }}" class="block overflow-hidden aspect-video">
                         @if($f->cover_url)
-                        <img src="{{ $f->cover_url }}" alt="{{ $f->title }}" class="w-full h-full object-cover group-hover:scale-105 transition duration-500">
+                        <img src="{{ $f->cover_url }}" alt="{{ $f->title }}" class="w-full h-full object-cover group-hover:scale-105 transition duration-500" loading="lazy">
                         @else
                         <div class="w-full h-full healing-gradient flex items-center justify-center">
                             <i data-lucide="book-open" class="h-12 w-12 text-white/60"></i>
@@ -279,7 +279,7 @@
                          alt="Ressources Comclusives"
                          class="rounded-[2rem] shadow-soft w-full h-[480px] object-cover" />
                     <div class="absolute bottom-6 left-6 bg-white rounded-2xl px-4 py-3 shadow-lg flex items-center gap-3">
-                        <img src="{{ asset('images/student-group_1_1-2-1.png') }}" alt="Étudiants" class="h-10 w-auto">
+                        <img src="{{ asset('images/student-group_1_1-2-1.png') }}" alt="Étudiants" class="h-10 w-auto" loading="lazy">
                         <div>
                             <p class="font-bold text-lg text-primary leading-none">30+</p>
                             <p class="text-xs text-gray-500">Étudiants actifs</p>
@@ -333,7 +333,7 @@
                         <i data-lucide="quote" class="h-8 w-8 text-primary/30 mb-4"></i>
                         <p class="text-foreground/90 italic leading-relaxed">"Grâce à Comclusives, j'ai compris que l'inclusion passe aussi par les images et les mots. Un regard transformé."</p>
                         <div class="flex items-center gap-3 mt-6">
-                            <img src="{{ asset('images/jul.png') }}" alt="Julien" class="h-10 w-10 rounded-full object-cover shrink-0">
+                            <img src="{{ asset('images/jul.png') }}" alt="Julien" class="h-10 w-10 rounded-full object-cover shrink-0" loading="lazy">
                             <div>
                                 <p class="font-semibold text-sm">Julien</p>
                                 <p class="text-xs text-muted-foreground">Formateur en communication</p>
@@ -351,7 +351,7 @@
                         <i data-lucide="quote" class="h-8 w-8 text-primary/30 mb-4"></i>
                         <p class="text-foreground/90 italic leading-relaxed">"Comclusives m'a aidée à repenser mes habitudes en classe. Mes élèves en bénéficient chaque jour."</p>
                         <div class="flex items-center gap-3 mt-6">
-                            <img src="{{ asset('images/fam.png') }}" alt="Sophie" class="h-10 w-10 rounded-full object-cover shrink-0">
+                            <img src="{{ asset('images/fam.png') }}" alt="Sophie" class="h-10 w-10 rounded-full object-cover shrink-0" loading="lazy">
                             <div>
                                 <p class="font-semibold text-sm">Sophie</p>
                                 <p class="text-xs text-muted-foreground">Enseignante en primaire</p>
@@ -395,7 +395,7 @@
                 <div class="grid md:grid-cols-3 gap-6">
                     <div class="bg-white rounded-2xl overflow-hidden shadow-sm border border-gray-100 group" data-aos="fade-up" data-aos-delay="0">
                         <div class="h-52 overflow-hidden">
-                            <img src="{{ asset('images/WhatsApp-Image-2025-10-15-a-20.01.41_f11cb6ce.jpg') }}" alt="L'inclusion à l'école primaire" class="w-full h-full object-cover group-hover:scale-105 transition duration-500">
+                            <img src="{{ asset('images/WhatsApp-Image-2025-10-15-a-20.01.41_f11cb6ce.jpg') }}" alt="L'inclusion à l'école primaire" class="w-full h-full object-cover group-hover:scale-105 transition duration-500" loading="lazy">
                         </div>
                         <div class="p-4">
                             <p class="font-bold text-sm mb-3">L'inclusion à l'école primaire</p>
@@ -407,7 +407,7 @@
                     </div>
                     <div class="bg-white rounded-2xl overflow-hidden shadow-sm border border-gray-100 group" data-aos="fade-up" data-aos-delay="100">
                         <div class="h-52 overflow-hidden">
-                            <img src="{{ asset('images/IMG-20251111-WA0019.jpg') }}" alt="Mon français sous l'angle des anglicismes" class="w-full h-full object-cover group-hover:scale-105 transition duration-500">
+                            <img src="{{ asset('images/IMG-20251111-WA0019.jpg') }}" alt="Mon français sous l'angle des anglicismes" class="w-full h-full object-cover group-hover:scale-105 transition duration-500" loading="lazy">
                         </div>
                         <div class="p-4">
                             <p class="font-bold text-sm mb-3">Mon français sous l'angle des anglicismes</p>
@@ -419,7 +419,7 @@
                     </div>
                     <div class="bg-white rounded-2xl overflow-hidden shadow-sm border border-gray-100 group" data-aos="fade-up" data-aos-delay="200">
                         <div class="h-52 overflow-hidden">
-                            <img src="{{ asset('images/WhatsApp-Image-2025-10-15-a-20.01.42_2de5a9a3.jpg') }}" alt="Écriture Inclusive" class="w-full h-full object-cover group-hover:scale-105 transition duration-500">
+                            <img src="{{ asset('images/WhatsApp-Image-2025-10-15-a-20.01.42_2de5a9a3.jpg') }}" alt="Écriture Inclusive" class="w-full h-full object-cover group-hover:scale-105 transition duration-500" loading="lazy">
                         </div>
                         <div class="p-4">
                             <p class="font-bold text-sm mb-3">Écriture Inclusive</p>
