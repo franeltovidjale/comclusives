@@ -632,7 +632,7 @@ if (typeof lucide !== 'undefined') lucide.createIcons();
             const btn = document.getElementById('authSubmitBtn');
             const errDiv = document.getElementById('authError');
             const data = { email: form.email.value, password: form.password.value };
-            if (tab === 'register') data.name = form.name.value;
+            if (tab === 'register') { data.name = form.name.value; data.password_confirmation = form.password.value; }
             btn.disabled = true; btn.textContent = '...';
             errDiv.style.display = 'none';
             try {
