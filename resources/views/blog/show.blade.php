@@ -65,6 +65,36 @@
 .article-prose div, .article-prose section, .article-prose article { overflow: visible !important; visibility: visible !important; opacity: 1 !important; display: revert; }
 /* Force AOS elements inside article to be visible */
 .article-prose [data-aos] { opacity: 1 !important; transform: none !important; }
+/* Neutralize Elementor/WordPress classes in imported content */
+.article-prose .elementor,
+.article-prose .elementor-element,
+.article-prose .e-con,
+.article-prose .e-con-inner,
+.article-prose .e-flex,
+.article-prose .e-con-boxed,
+.article-prose .elementor-widget,
+.article-prose .elementor-widget-wrap,
+.article-prose .elementor-section,
+.article-prose .elementor-container,
+.article-prose .elementor-column,
+.article-prose .elementor-widget-container,
+.article-prose .elementor-widget-text-editor {
+    display: block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    overflow: visible !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    color: #374151 !important;
+}
+/* Hide WordPress meta/share blocks imported from old site */
+.article-prose .blog-meta,
+.article-prose .share-links,
+.article-prose .tagcloud { display: none !important; }
+/* Fix lazy-loaded images from LWS (data-src → src) */
+.article-prose img[data-src]:not([src]) { display: none; }
 .article-prose p { margin-bottom: 1.4rem; }
 .article-prose h2 { font-family:Outfit,sans-serif; font-size:1.5rem; font-weight:700; color:#111827; margin:2.5rem 0 1rem; padding-bottom:.5rem; border-bottom:2px solid #e5f0ef; }
 .article-prose h3 { font-family:Outfit,sans-serif; font-size:1.2rem; font-weight:700; color:#111827; margin:2rem 0 .75rem; }
