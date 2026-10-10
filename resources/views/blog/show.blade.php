@@ -438,7 +438,7 @@
 @endif
 
 {{-- Share floating button --}}
-<button id="shareBtn" class="fixed bottom-6 left-6 z-40 flex items-center gap-2 px-5 py-3 rounded-full text-white text-sm font-semibold shadow-lg hover:scale-105 transition-all" style="background:linear-gradient(135deg,#0d9488,#6366f1);touch-action:manipulation;-webkit-tap-highlight-color:transparent;cursor:pointer">
+<button id="shareBtn" class="fixed left-6 z-40 flex items-center gap-2 px-5 py-3 rounded-full text-white text-sm font-semibold shadow-lg hover:scale-105 transition-all" style="bottom:max(1.5rem, calc(env(safe-area-inset-bottom, 0px) + 70px));background:linear-gradient(135deg,#0d9488,#6366f1);touch-action:manipulation;-webkit-tap-highlight-color:transparent;cursor:pointer">
     <svg class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M4 12v8a2 2 0 002 2h12a2 2 0 002-2v-8M16 6l-4-4-4 4M12 2v13"/></svg>
     Partager
 </button>
