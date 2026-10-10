@@ -605,7 +605,7 @@ if (typeof lucide !== 'undefined') lucide.createIcons();
                 tab = tab || 'login';
                 const existing = document.querySelector('[data-auth-overlay]');
                 if (existing) { existing.remove(); }
-                const CSRF = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+                const CSRF = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '{{ csrf_token() }}';
                 const overlay = document.createElement('div');
                 overlay.style.cssText = 'position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,0.5);display:flex;align-items:center;justify-content:center;padding:16px';
                 overlay.dataset.authOverlay = '1';
