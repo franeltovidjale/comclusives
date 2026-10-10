@@ -42,7 +42,11 @@ class ArticleController extends Controller
             ->with(['categories', 'author', 'approvedComments.replies'])
             ->firstOrFail();
 
-        $article->incrementViews();
+        $sessionKey = 'viewed_article_'.$article->id;
+        if (!session()->has($sessionKey)) {
+            $article->incrementViews();
+            session()->put($sessionKey, true);
+        }
 
         $related = Article::published()
             ->whereHas('categories', fn($q) => $q->whereIn('id', $article->categories->pluck('id')))
