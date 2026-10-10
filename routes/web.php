@@ -32,7 +32,7 @@ Route::post('/comments/{comment}/like', [CommentController::class, 'like'])->nam
 Route::get('/sitemap.xml', [ArticleController::class, 'sitemap'])->name('sitemap');
 
 // ─── ADMIN ───────────────────────────────────────────
-Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () {
+Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(function () {
     Route::get('/', [Admin\DashboardController::class, 'index'])->name('dashboard');
 
     Route::resource('articles', Admin\ArticleController::class);

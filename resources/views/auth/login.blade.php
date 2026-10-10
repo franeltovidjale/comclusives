@@ -67,7 +67,11 @@
             </form>
         </div>
 
-        <p class="text-center text-xs text-white/40 mt-6">
+        <p class="text-center text-sm text-white/60 mt-4">
+            Pas encore de compte ?
+            <a href="{{ route('register') }}" class="text-white font-semibold hover:underline">S'inscrire</a>
+        </p>
+        <p class="text-center text-xs text-white/40 mt-3">
             <a href="{{ route('home') }}" class="hover:text-white transition">← Retour au site</a>
         </p>
     </div>

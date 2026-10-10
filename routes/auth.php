@@ -12,7 +12,10 @@ Route::middleware('guest')->group(function () {
         $credentials = $request->validate(['email'=>'required|email','password'=>'required']);
         if (Auth::attempt($credentials, $request->boolean('remember'))) {
             $request->session()->regenerate();
-            return redirect()->intended(route('admin.dashboard'));
+            if (Auth::user()->role === 'admin') {
+                return redirect()->intended(route('admin.dashboard'));
+            }
+            return redirect()->intended(route('home'));
         }
         return back()->withErrors(['email' => 'Identifiants incorrects.'])->onlyInput('email');
     })->name('login.store');
@@ -49,6 +52,28 @@ Route::middleware('guest')->group(function () {
             ? redirect()->route('login')->with('status', __($status))
             : back()->withErrors(['email' => __($status)]);
     })->name('password.update');
+
+    // Inscription utilisateur
+    Route::get('/inscription', fn() => view('auth.register'))->name('register');
+    Route::post('/inscription', function (Request $request) {
+        $data = $request->validate([
+            'name'     => 'required|string|max:100',
+            'email'    => 'required|email|unique:users,email',
+            'password' => 'required|min:8|confirmed',
+        ], [
+            'email.unique'    => 'Cette adresse e-mail est déjà utilisée.',
+            'password.min'    => 'Le mot de passe doit contenir au moins 8 caractères.',
+            'password.confirmed' => 'Les mots de passe ne correspondent pas.',
+        ]);
+        $user = \App\Models\User::create([
+            'name'     => $data['name'],
+            'email'    => $data['email'],
+            'password' => bcrypt($data['password']),
+            'role'     => 'user',
+        ]);
+        Auth::login($user);
+        return redirect()->route('home')->with('status', 'Bienvenue sur Comclusives !');
+    })->name('register.store');
 });
 
 Route::middleware('auth')->group(function () {
