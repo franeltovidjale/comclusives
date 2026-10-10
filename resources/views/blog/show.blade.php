@@ -478,12 +478,12 @@ function handleShare() {
 
 {{-- Share Modal --}}
 <div id="shareModal" class="fixed inset-0 z-50 hidden items-end sm:items-center justify-center">
-    <div id="shareOverlay" class="absolute inset-0 bg-black/50" style="backdrop-filter:blur(4px)"></div>
+    <div id="shareOverlay" onclick="closeShareModal()" class="absolute inset-0 bg-black/50" style="backdrop-filter:blur(4px)"></div>
     <div class="relative w-full sm:max-w-sm mx-auto bg-white rounded-t-3xl sm:rounded-3xl shadow-2xl p-6 pb-8 sm:pb-6" style="animation:slideUp .3s ease">
         <div class="w-10 h-1 rounded-full bg-gray-200 mx-auto mb-5 sm:hidden"></div>
         <div class="flex items-center justify-between mb-6">
             <h3 class="font-bold text-lg">Partager cet article</h3>
-            <button id="closeShare" class="h-8 w-8 rounded-full bg-gray-100 flex items-center justify-center hover:bg-gray-200 transition"><i data-lucide="x" class="h-4 w-4"></i></button>
+            <button id="closeShare" onclick="closeShareModal()" class="h-8 w-8 rounded-full bg-gray-100 flex items-center justify-center hover:bg-gray-200 transition" style="touch-action:manipulation;-webkit-tap-highlight-color:transparent"><i data-lucide="x" class="h-4 w-4"></i></button>
         </div>
         <div class="flex items-center gap-3 p-3 rounded-2xl bg-gray-50 mb-6">
             @if($article->cover_url)
