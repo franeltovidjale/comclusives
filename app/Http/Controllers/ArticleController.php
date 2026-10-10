@@ -64,7 +64,15 @@ class ArticleController extends Controller
         $prev = Article::published()->where('published_at', '<', $article->published_at)->latest('published_at')->first();
         $next = Article::published()->where('published_at', '>', $article->published_at)->oldest('published_at')->first();
 
-        return view('blog.show', compact('article', 'related', 'popular', 'categories', 'prev', 'next'));
+        $comments = $article->approvedComments->map(fn($c) => [
+            'id'   => $c->id,
+            'name' => $c->author_name,
+            'text' => $c->body,
+            'date' => $c->created_at->diffForHumans(),
+            'likes'=> $c->likes,
+        ])->values();
+
+        return view('blog.show', compact('article', 'related', 'popular', 'categories', 'prev', 'next', 'comments'));
     }
 
     public function sitemap()

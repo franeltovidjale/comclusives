@@ -456,13 +456,7 @@ const CSRF_TOKEN = '{{ csrf_token() }}';
 if (typeof lucide !== 'undefined') lucide.createIcons();
         // ===== COMMENTAIRES =====
         const COLORS = ['#0d9488','#6366f1','#f59e0b','#ec4899','#10b981','#3b82f6','#8b5cf6'];
-        const COMMENTS = @json($article->approvedComments->map(fn($c) => [
-            'id'   => $c->id,
-            'name' => $c->author_name,
-            'text' => $c->body,
-            'date' => $c->created_at->diffForHumans(),
-            'likes'=> $c->likes,
-        ]));
+        const COMMENTS = @json($comments);
         let totalComments = COMMENTS.length;
 
         function initials(name) { return name.split(' ').map(w=>w[0]).join('').toUpperCase().slice(0,2); }
