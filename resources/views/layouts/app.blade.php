@@ -71,6 +71,14 @@
     <link rel="icon" type="image/png" href="{{ asset('images/logo-icon.png') }}">
     <link rel="apple-touch-icon" href="{{ asset('images/logo-icon.png') }}">
 
+    {{-- ── PWA ── --}}
+    <link rel="manifest" href="{{ asset('manifest.json') }}">
+    <meta name="theme-color" content="#0a6b63">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="Comclusives">
+
     @stack('head')
 </head>
 <body>
@@ -101,5 +109,10 @@
         document.getElementById('navToggle')?.addEventListener('click', () => document.getElementById('mobileNav').classList.toggle('hidden'));
     </script>
     @stack('scripts')
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => navigator.serviceWorker.register('/sw.js'));
+        }
+    </script>
 </body>
 </html>

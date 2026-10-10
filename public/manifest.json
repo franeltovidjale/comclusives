@@ -1,0 +1,33 @@
+{
+    "name": "Comclusives",
+    "short_name": "Comclusives",
+    "description": "Communication inclusive, diversité et égalité des chances.",
+    "start_url": "/",
+    "display": "standalone",
+    "background_color": "#ffffff",
+    "theme_color": "#0a6b63",
+    "orientation": "portrait-primary",
+    "lang": "fr",
+    "icons": [
+        {
+            "src": "/images/logo-icon.png",
+            "sizes": "192x192",
+            "type": "image/png",
+            "purpose": "any maskable"
+        },
+        {
+            "src": "/images/logo-icon.png",
+            "sizes": "512x512",
+            "type": "image/png",
+            "purpose": "any maskable"
+        }
+    ],
+    "categories": ["education", "news"],
+    "shortcuts": [
+        {
+            "name": "Blog",
+            "url": "/blog",
+            "description": "Tous nos articles"
+        }
+    ]
+}

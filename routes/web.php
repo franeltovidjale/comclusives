@@ -6,6 +6,7 @@ use App\Http\Controllers\Admin;
 use Illuminate\Support\Facades\Route;
 
 // ─── FRONT ───────────────────────────────────────────
+Route::get('/offline', fn() => view('offline'))->name('offline');
 Route::get('/', [ArticleController::class, 'home'])->name('home');
 Route::get('/a-propos', [ArticleController::class, 'about'])->name('about');
 Route::get('/blog', [ArticleController::class, 'index'])->name('blog.index');
