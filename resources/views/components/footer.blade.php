@@ -9,10 +9,10 @@
                     <span class="text-2xl font-bold tracking-tight" style="font-family:Outfit,sans-serif">Com<span class="text-accent">clusives</span></span>
                 </a>
                 <p class="text-secondary-foreground/70 max-w-sm leading-relaxed">Comclusives favorise la communication inclusive, la diversité et l'égalité des chances.</p>
-                <form class="flex gap-2 max-w-sm" method="POST" action="{{ route('newsletter.subscribe') }}">
+                <form class="flex flex-col sm:flex-row gap-2 max-w-sm w-full" method="POST" action="{{ route('newsletter.subscribe') }}">
                     @csrf
-                    <input type="email" name="email" required placeholder="Votre adresse e-mail" class="flex-1 px-4 py-3 rounded-full bg-white/10 border border-white/15 placeholder-white/50 text-sm focus:outline-none focus:border-primary transition">
-                    <button class="btn-primary text-sm px-5">S'abonner</button>
+                    <input type="email" name="email" required placeholder="Votre adresse e-mail" class="flex-1 w-full px-4 py-3 rounded-full bg-white/10 border border-white/15 placeholder-white/50 text-sm focus:outline-none focus:border-primary transition">
+                    <button class="btn-primary text-sm px-5 whitespace-nowrap">S'abonner</button>
                 </form>
                 @if(session('newsletter_success'))
                     <p class="text-green-400 text-sm">{{ session('newsletter_success') }}</p>
