@@ -80,14 +80,12 @@ class CommentController extends Controller
 
     public function like(Comment $comment)
     {
-        $key = 'liked_'.$comment->id.'_'.md5(request()->ip());
-        if (Cache::has($key)) {
-            Cache::forget($key);
+        $action = request()->input('action', 'like');
+        if ($action === 'unlike') {
             $comment->decrement('likes');
-            return response()->json(['likes' => max(0, $comment->likes), 'liked' => false]);
+            return response()->json(['likes' => max(0, $comment->fresh()->likes), 'liked' => false]);
         }
-        Cache::put($key, true, now()->addDays(1));
         $comment->increment('likes');
-        return response()->json(['likes' => $comment->likes, 'liked' => true]);
+        return response()->json(['likes' => $comment->fresh()->likes, 'liked' => true]);
     }
 }

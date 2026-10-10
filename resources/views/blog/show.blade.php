@@ -582,15 +582,21 @@ if (typeof lucide !== 'undefined') lucide.createIcons();
                 setLiked(likeBtn);
             }
 
+            async function sendLike(action) {
+                const res = await fetch(`/comments/${commentId}/like`, {
+                    method: 'POST',
+                    headers: { 'X-CSRF-TOKEN': CSRF_TOKEN, 'Accept': 'application/json', 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ action })
+                });
+                return res.json();
+            }
+
             // Like toggle
             likeBtn.addEventListener('click', async function() {
                 if (!commentId) return;
+                const alreadyLiked = this.dataset.liked === 'true';
                 try {
-                    const res = await fetch(`/comments/${commentId}/like`, {
-                        method: 'POST',
-                        headers: { 'X-CSRF-TOKEN': CSRF_TOKEN, 'Accept': 'application/json' }
-                    });
-                    const json = await res.json();
+                    const json = await sendLike(alreadyLiked ? 'unlike' : 'like');
                     this.querySelector('.like-count').textContent = json.likes || '';
                     if (json.liked) {
                         localStorage.setItem('liked_' + commentId, '1');
@@ -604,10 +610,17 @@ if (typeof lucide !== 'undefined') lucide.createIcons();
             });
 
             // Dislike toggle
-            dislikeBtn.addEventListener('click', function() {
+            dislikeBtn.addEventListener('click', async function() {
                 const disliked = this.dataset.disliked === 'true';
-                clearLike(likeBtn);
-                localStorage.removeItem('liked_' + commentId);
+                // Si liké, unlike côté serveur aussi
+                if (likeBtn.dataset.liked === 'true' && commentId) {
+                    try {
+                        const json = await sendLike('unlike');
+                        likeBtn.querySelector('.like-count').textContent = json.likes || '';
+                        localStorage.removeItem('liked_' + commentId);
+                        clearLike(likeBtn);
+                    } catch(e) {}
+                }
                 if (disliked) {
                     clearDislike(this);
                 } else {
