@@ -18,6 +18,9 @@ class CommentController extends Controller
     public function approve(Comment $comment)
     {
         $comment->update(['approved' => !$comment->approved]);
+        if (request()->expectsJson()) {
+            return response()->json(['approved' => $comment->approved]);
+        }
         return back()->with('success', 'Statut mis à jour.');
     }
 
@@ -26,6 +29,9 @@ class CommentController extends Controller
     public function destroy(Comment $comment)
     {
         $comment->delete();
+        if (request()->expectsJson()) {
+            return response()->json(['deleted' => true]);
+        }
         return back()->with('success', 'Commentaire supprimé.');
     }
 }
