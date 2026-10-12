@@ -105,6 +105,27 @@
             </div>
         </section>
 
+        {{-- Modal OTP vérification email contact --}}
+        <div id="contactOtpModal" class="fixed inset-0 z-50 hidden items-center justify-center p-4">
+            <div class="absolute inset-0 bg-black/60" style="backdrop-filter:blur(4px)" onclick="closeContactOtp()"></div>
+            <div class="relative bg-card rounded-[2rem] shadow-2xl w-full max-w-sm p-8 text-center z-10">
+                <div class="h-14 w-14 rounded-2xl healing-gradient flex items-center justify-center mx-auto mb-5">
+                    <i data-lucide="mail-check" class="h-7 w-7 text-white"></i>
+                </div>
+                <h3 class="font-bold text-xl mb-2">Vérifiez votre email</h3>
+                <p class="text-muted-foreground text-sm mb-6">Un code à 6 chiffres a été envoyé à <strong id="otpEmailDisplay"></strong>. Entrez-le pour envoyer votre message.</p>
+                <input id="contactOtpInput" type="text" inputmode="numeric" maxlength="6" placeholder="_ _ _ _ _ _"
+                    class="w-full text-center text-3xl font-bold tracking-[0.5em] px-4 py-4 rounded-xl border-2 border-border focus:outline-none focus:border-primary mb-2"
+                    style="font-family:'Courier New',monospace">
+                <p id="contactOtpError" class="hidden text-red-500 text-sm mb-3">Code incorrect ou expiré.</p>
+                <button onclick="verifyContactOtp()" id="contactOtpVerifyBtn" class="btn-primary w-full mb-3">Valider et envoyer</button>
+                <button onclick="closeContactOtp()" class="w-full py-2 text-sm text-muted-foreground hover:text-foreground transition">Annuler</button>
+                <p class="mt-4 text-xs text-muted-foreground">
+                    Pas reçu ? <button onclick="resendContactOtp()" id="contactOtpResendBtn" class="text-primary underline">Renvoyer</button>
+                </p>
+            </div>
+        </div>
+
         <!-- CARTE -->
         <section class="pb-20">
             <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -121,6 +142,9 @@
 
 @push('scripts')
 <script>
+const CSRF = document.querySelector('meta[name="csrf-token"]').content;
+let pendingFormData = null;
+
 async function handleSubmit(e) {
     e.preventDefault();
     const form = document.getElementById('contactForm');
@@ -128,23 +152,87 @@ async function handleSubmit(e) {
     const ok   = document.getElementById('successMsg');
     const err  = document.getElementById('errorMsg');
     ok.classList.add('hidden'); err.classList.add('hidden');
-    btn.disabled = true; btn.textContent = 'Envoi…';
+
+    const name  = form.querySelector('[name=name]').value.trim();
+    const email = form.querySelector('[name=email]').value.trim();
+    if (!name || !email) return;
+
+    btn.disabled = true; btn.textContent = 'Envoi du code…';
     try {
-        const res = await fetch('{{ route("contact.send") }}', {
+        const res = await fetch('{{ route("contact.send-otp") }}', {
             method: 'POST',
-            headers: { 'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content, 'Accept': 'application/json' },
-            body: new FormData(form)
+            headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': CSRF, 'Accept': 'application/json' },
+            body: JSON.stringify({ name, email })
         });
         if (res.ok) {
-            form.reset();
-            ok.classList.remove('hidden');
+            pendingFormData = new FormData(form);
+            document.getElementById('otpEmailDisplay').textContent = email;
+            document.getElementById('contactOtpInput').value = '';
+            document.getElementById('contactOtpError').classList.add('hidden');
+            document.getElementById('contactOtpModal').classList.remove('hidden');
+            document.getElementById('contactOtpModal').classList.add('flex');
+            document.body.style.overflow = 'hidden';
+            document.getElementById('contactOtpInput').focus();
         } else {
             err.classList.remove('hidden');
         }
-    } catch(e) {
+    } catch(ex) {
         err.classList.remove('hidden');
     }
     btn.disabled = false; btn.textContent = 'Envoyer le message';
 }
+
+function closeContactOtp() {
+    document.getElementById('contactOtpModal').classList.add('hidden');
+    document.getElementById('contactOtpModal').classList.remove('flex');
+    document.body.style.overflow = '';
+}
+
+async function verifyContactOtp() {
+    const otp = document.getElementById('contactOtpInput').value.trim();
+    if (otp.length !== 6) return;
+    const btn = document.getElementById('contactOtpVerifyBtn');
+    const errEl = document.getElementById('contactOtpError');
+    btn.disabled = true; btn.textContent = 'Vérification…';
+    errEl.classList.add('hidden');
+    try {
+        pendingFormData.set('otp', otp);
+        const res = await fetch('{{ route("contact.send") }}', {
+            method: 'POST',
+            headers: { 'X-CSRF-TOKEN': CSRF, 'Accept': 'application/json' },
+            body: pendingFormData
+        });
+        if (res.ok) {
+            closeContactOtp();
+            document.getElementById('contactForm').reset();
+            pendingFormData = null;
+            document.getElementById('successMsg').classList.remove('hidden');
+        } else {
+            errEl.classList.remove('hidden');
+        }
+    } catch(ex) {
+        errEl.classList.remove('hidden');
+    }
+    btn.disabled = false; btn.textContent = 'Valider et envoyer';
+}
+
+async function resendContactOtp() {
+    if (!pendingFormData) return;
+    const btn = document.getElementById('contactOtpResendBtn');
+    btn.disabled = true; btn.textContent = 'Envoi…';
+    const name  = pendingFormData.get('name');
+    const email = pendingFormData.get('email');
+    await fetch('{{ route("contact.send-otp") }}', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': CSRF, 'Accept': 'application/json' },
+        body: JSON.stringify({ name, email })
+    });
+    btn.textContent = 'Code renvoyé';
+    setTimeout(() => { btn.disabled = false; btn.textContent = 'Renvoyer'; }, 5000);
+}
+
+document.getElementById('contactOtpInput')?.addEventListener('keydown', function(e) {
+    if (e.key === 'Enter') verifyContactOtp();
+});
 </script>
 @endpush

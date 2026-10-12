@@ -27,6 +27,25 @@ Route::get('/a-propos', [ArticleController::class, 'about'])->name('about');
 Route::get('/blog', [ArticleController::class, 'index'])->name('blog.index');
 Route::get('/blog/{slug}', [ArticleController::class, 'show'])->name('blog.show');
 Route::get('/contact', fn() => view('contact'))->name('contact');
+
+// Étape 1 : envoyer OTP de vérification
+Route::post('/contact/send-otp', function (\Illuminate\Http\Request $request) {
+    $request->validate([
+        'name'  => 'required|string|max:100',
+        'email' => 'required|email|max:255',
+    ]);
+    $otp = str_pad(random_int(0, 999999), 6, '0', STR_PAD_LEFT);
+    \Illuminate\Support\Facades\Cache::put(
+        'contact_otp_' . md5($request->email),
+        $otp,
+        now()->addMinutes(10)
+    );
+    \Illuminate\Support\Facades\Mail::to($request->email)
+        ->send(new \App\Mail\ContactOtpMail($otp, $request->name));
+    return response()->json(['sent' => true]);
+})->name('contact.send-otp');
+
+// Étape 2 : vérifier OTP et enregistrer le message
 Route::post('/contact', function (\Illuminate\Http\Request $request) {
     $data = $request->validate([
         'name'    => 'required|string|max:100',
@@ -34,7 +53,14 @@ Route::post('/contact', function (\Illuminate\Http\Request $request) {
         'phone'   => 'nullable|string|max:30',
         'subject' => 'nullable|string|max:100',
         'message' => 'required|string|max:3000',
+        'otp'     => 'required|string|size:6',
     ]);
+    $key   = 'contact_otp_' . md5($data['email']);
+    $saved = \Illuminate\Support\Facades\Cache::get($key);
+    if (!$saved || $saved !== $data['otp']) {
+        return response()->json(['error' => 'Code incorrect ou expiré.'], 422);
+    }
+    \Illuminate\Support\Facades\Cache::forget($key);
     \App\Models\ContactMessage::create([
         'name'  => $data['name'],
         'email' => $data['email'],
